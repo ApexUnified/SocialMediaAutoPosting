@@ -13,14 +13,13 @@ const navigation = [
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
-
   const { user } = useAuth();
   return (
     <>
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
+          className="fixed inset-0 z-20 bg-gray-600 bg-opacity-75 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -31,10 +30,9 @@ const Sidebar = ({ isOpen, onClose }) => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="h-screen flex flex-col">
-          <div className="flex items-center justify-center mt-5 border-b border-zinc-200 pb-8">
+        <div className="flex flex-col h-screen">
+          <div className="flex items-center justify-center pb-8 mt-5 border-b border-zinc-200">
             <Logo />
-
           </div>
           {/* Close button for mobile */}
           <div className="flex items-center justify-between h-16 px-4 border-b lg:hidden">
@@ -43,15 +41,15 @@ const Sidebar = ({ isOpen, onClose }) => {
             </span>
             <button
               onClick={onClose}
-              className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+              className="p-2 text-gray-400 rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
             >
               <span className="sr-only">Close sidebar</span>
-              <X className="h-6 w-6" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-2 py-4 space-y-2 mt-4 overflow-y-auto">
+          <nav className="flex-1 px-2 py-4 mt-4 space-y-2 overflow-y-auto">
             {navigation.map((item) => (
               <NavLink
                 key={item.name}
@@ -59,11 +57,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                 className={({ isActive }) =>
                   `group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                     isActive
-                      ? "bg-primary text-white"
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`
                 }
-                onClick={onClose}
+                onClick={() => window.location.reload()}
               >
                 <item.icon
                   className={`mr-3 h-5 w-5 ${
@@ -78,13 +76,12 @@ const Sidebar = ({ isOpen, onClose }) => {
           </nav>
 
           {/* User info */}
-          <div className="flex-shrink-0 flex border-t border-zinc-200 p-4">
-            <div className="flex-shrink-0 group block">
+          <div className="flex flex-shrink-0 p-4 border-t border-zinc-200">
+            <div className="flex-shrink-0 block group">
               <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                <div className="flex items-center justify-center w-10 h-10 text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600">
                   <span className="text-lg font-medium">
-                    {user?.firstName?.[0]?.toUpperCase() ||
-                      "U"}
+                    {user?.firstName?.[0]?.toUpperCase() || "U"}
                   </span>
                 </div>
                 <div className="ml-3">

@@ -16,6 +16,7 @@ import {
   BarChart3,
   Users,
   Globe,
+  XIcon,
 } from "lucide-react";
 import { blogService } from "../../services/blogService";
 import { Link } from "react-router-dom";
@@ -236,33 +237,44 @@ const EnhancedPostCard = ({ post }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer">
+    <div className="overflow-hidden font-bold text-white transition-all duration-300 shadow-2xl cursor-pointer shadow-black bg-gradient-to-t from-blue-800 to-pink-200 rounded-2xl hover:scale-105 group">
       {/* Media Preview (if available) */}
-      {post.media && post.media.length > 0 && (
-        <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200">
+      {post.media && post.media.length > 0 ? (
+        <div className="relative h-48">
           <img
             src={post.media[0].url}
             alt="Post media"
-            className="w-full h-full object-cover"
+            className="object-cover w-full h-full"
             onError={(e) => {
               e.target.style.display = "none";
               e.target.nextSibling.style.display = "flex";
             }}
           />
-          <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 items-center justify-center hidden">
+          <div className="items-center justify-center hidden w-full h-full bg-gradient-to-br from-blue-800 to-pink-200">
             <div className="text-center">
-              <FileText size={32} className="text-blue-500 mx-auto mb-2" />
-              <span className="text-sm font-medium text-blue-700">
+              <FileText size={32} className="mx-auto mb-2 text-white" />
+              <span className="text-sm font-medium text-white">
                 Media Content
               </span>
             </div>
           </div>
           {/* Media count badge */}
           {post.media.length > 1 && (
-            <div className="absolute top-3 right-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded-lg text-xs font-medium">
+            <div className="absolute px-2 py-1 text-xs font-medium text-white bg-black rounded-lg top-3 right-3 bg-opacity-60">
               +{post.media.length - 1} more
             </div>
           )}
+        </div>
+      ) : (
+        <div className="relative h-48">
+          <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-800 to-pink-200">
+            <div className="text-center">
+              <XIcon size={40} className="mx-auto mb-2 text-white" />
+              <span className="text-sm font-medium text-white">
+                No Media Content
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
@@ -282,12 +294,12 @@ const EnhancedPostCard = ({ post }) => {
               >
                 {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
               </span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+              <span className="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded-full">
                 {getCreationTypeBadge(post.creationType)}
               </span>
             </div>
           </div>
-          <div className="text-right text-xs text-gray-500">
+          <div className="text-xs text-right text-gray-500">
             <div className="flex items-center gap-1 mb-1">
               <Calendar size={12} />
               <span>{formatDate(post.createdAt)}</span>
@@ -300,12 +312,12 @@ const EnhancedPostCard = ({ post }) => {
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+        <h3 className="mb-3 text-xl font-bold leading-tight text-gray-900 transition-colors line-clamp-2 group-hover:text-white/70">
           {post.title}
         </h3>
 
         {/* Content Preview */}
-        <p className="text-gray-600 text-sm line-clamp-4 mb-4 leading-relaxed">
+        <p className="mb-4 text-sm leading-relaxed text-gray-600 line-clamp-4">
           {post.socialMediaShares?.[0]?.sharedContent ||
             post.content
               .replace(/[#@]\w+/g, "")
@@ -322,13 +334,13 @@ const EnhancedPostCard = ({ post }) => {
               .map((tag, index) => (
                 <span
                   key={index}
-                  className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-md font-medium"
+                  className="px-2 py-1 text-xs font-medium text-white rounded-md bg-slate-800"
                 >
                   {tag}
                 </span>
               ))}
             {post.content.match(/#\w+/g).length > 3 && (
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+              <span className="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded-md">
                 +{post.content.match(/#\w+/g).length - 3} more
               </span>
             )}
@@ -338,12 +350,19 @@ const EnhancedPostCard = ({ post }) => {
         {/* Bottom Section - Platforms */}
         {post.socialMediaShares && post.socialMediaShares.length > 0 && (
           <div className="pt-4 border-t border-gray-100">
+            {/* Status indicator with timestamp */}
+            <div className="my-1 text-sm text-white ">
+              {post.socialMediaShares[0]?.publishedAt && (
+                <span>
+                  Published {formatTime(post.socialMediaShares[0].publishedAt)}
+                </span>
+              )}
+            </div>
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 font-medium">
-                  Published on:
-                </span>
-                <div className="flex gap-1">
+                <span className="text-sm text-white">Published on:</span>
+                <div className="flex flex-wrap items-start gap-1">
                   {post.socialMediaShares.map((share, index) => (
                     <a
                       key={index}
@@ -355,16 +374,6 @@ const EnhancedPostCard = ({ post }) => {
                     </a>
                   ))}
                 </div>
-              </div>
-
-              {/* Status indicator with timestamp */}
-              <div className="text-xs text-gray-400">
-                {post.socialMediaShares[0]?.publishedAt && (
-                  <span>
-                    Published{" "}
-                    {formatTime(post.socialMediaShares[0].publishedAt)}
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -384,11 +393,11 @@ const StatsCard = ({ icon: Icon, title, value, subtitle, color = "blue" }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
+    <div className="p-6 transition-all duration-300 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mb-1">{value}</p>
+          <p className="mb-1 text-sm font-medium text-gray-600">{title}</p>
+          <p className="mb-1 text-2xl font-bold text-gray-900">{value}</p>
           {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
         </div>
         <div
@@ -476,23 +485,23 @@ const PostsDashboard = ({ onCreatePost }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="w-12 h-12 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
       </div>
     );
   }
 
   if (posts.length === 0) {
     return (
-      <div className="text-center py-16">
+      <div className="py-16 text-center">
         <div className="max-w-md mx-auto">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6">
+          <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl">
             <FileText className="w-10 h-10 text-blue-500" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+          <h3 className="mb-3 text-2xl font-bold text-gray-900">
             Ready to create amazing content?
           </h3>
-          <p className="text-gray-600 mb-8 leading-relaxed">
+          <p className="mb-8 leading-relaxed text-gray-600">
             Get started by creating your first post and sharing it across
             multiple platforms to reach your audience.
           </p>
@@ -511,10 +520,10 @@ const PostsDashboard = ({ onCreatePost }) => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          {/* <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Content Dashboard</h2>
-          <p className="text-gray-600 text-lg">Manage and track your social media content performance</p> */}
+          {/* <h2 className="mb-2 text-3xl font-bold text-gray-900 lg:text-4xl">Content Dashboard</h2>
+          <p className="text-lg text-gray-600">Manage and track your social media content performance</p> */}
         </div>
         <button
           onClick={onCreatePost}
@@ -526,20 +535,20 @@ const PostsDashboard = ({ onCreatePost }) => {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+      <div className="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
+        <div className="flex flex-col flex-1 gap-4 sm:flex-row">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
             <Search
               size={20}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute text-gray-400 transform -translate-y-1/2 left-3 top-1/2"
             />
             <input
-              type="text"
+              type="search"
               placeholder="Search posts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full py-3 pl-10 pr-4 transition-all duration-200 border border-slate-500 rounded-xl"
             />
           </div>
 
@@ -551,7 +560,7 @@ const PostsDashboard = ({ onCreatePost }) => {
                 onClick={() => setFilter(status)}
                 className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${
                   filter === status
-                    ? "bg-blue-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
                     : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                 }`}
               >
@@ -570,14 +579,14 @@ const PostsDashboard = ({ onCreatePost }) => {
           </div>
         </div>
 
-        <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg whitespace-nowrap">
+        <div className="px-4 py-2 text-sm text-gray-600 rounded-lg bg-gray-50 whitespace-nowrap">
           {pagination.total} total posts • Page {pagination.page} of{" "}
           {pagination.pages}
         </div>
       </div>
 
       {/* Posts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {filteredPosts.map((post) => (
           <EnhancedPostCard key={post._id} post={post} />
         ))}
@@ -585,14 +594,14 @@ const PostsDashboard = ({ onCreatePost }) => {
 
       {/* No Results */}
       {filteredPosts.length === 0 && (filter !== "all" || searchTerm) && (
-        <div className="text-center py-12">
-          <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+        <div className="py-12 text-center">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gray-50">
             <Search className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="mb-2 text-lg font-semibold text-gray-900">
             No posts found
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             {searchTerm
               ? `No posts match "${searchTerm}"`
               : `No ${filter} posts found`}
@@ -602,7 +611,7 @@ const PostsDashboard = ({ onCreatePost }) => {
               setSearchTerm("");
               setFilter("all");
             }}
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="font-medium text-blue-600 hover:text-blue-700"
           >
             Clear filters
           </button>
@@ -615,7 +624,7 @@ const PostsDashboard = ({ onCreatePost }) => {
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-3 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            className="p-3 mt-10 transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 "
           >
             <ArrowLeft size={16} />
           </button>
@@ -625,10 +634,10 @@ const PostsDashboard = ({ onCreatePost }) => {
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`px-4 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-3 mt-10 rounded-lg font-medium transition-colors ${
                   currentPage === page
-                    ? "bg-blue-600 text-white"
-                    : "border border-gray-300 hover:bg-gray-50"
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                    : "hover:bg-gray-50"
                 }`}
               >
                 {page}
@@ -639,7 +648,7 @@ const PostsDashboard = ({ onCreatePost }) => {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === pagination.pages}
-            className="p-3 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            className="p-3 mt-10 transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
           >
             <ArrowRight size={16} />
           </button>

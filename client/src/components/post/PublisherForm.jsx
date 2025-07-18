@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { blogService } from "../../services/blogService";
 import { ArrowLeft, ChevronDown, ChevronUp, Calendar, X } from "lucide-react";
 import PlatformSelector from "./PlatformSelector";
@@ -37,14 +37,6 @@ const PublisherForm = ({ onBack, onSuccess }) => {
   const [blogId, setBlogId] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    console.log(selectedPlatforms);
-  }, [selectedPlatforms]);
-
-  useEffect(() => {
-    console.log(formData.snapchatPostType);
-  }, [formData.snapchatPostType]);
 
   const handlePlatformToggle = (platformId) => {
     setSelectedPlatforms((prev) =>
@@ -388,7 +380,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     }
 
     if (selectedPlatforms.includes("linkedin")) {
-      console.log(trimmed.length);
+      // console.log(trimmed.length);
       if (trimmed.length > 3000) {
         toast.error(
           `LinkedIn  Post Text Length Cannot Be Greater Than 3000 characters. Your post is ${trimmed.length} characters.`
@@ -437,6 +429,13 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     }
 
     if (selectedPlatforms.includes("facebook")) {
+      if (trimmed.length > 63206) {
+        toast.error(
+          `Facebook  Post Text Length Cannot Be Greater Than 63206 characters. Your post is ${trimmed.length} characters.`
+        );
+        return false;
+      }
+
       if (videos.length > 1) {
         toast.error("Facebook supports only one video at a time.");
         return false;
@@ -864,20 +863,20 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       };
 
       const response = await blogService.create(payload);
-      console.log(response);
+      // console.log(response);
 
       if (response.success) {
-        console.log("✅ Blog created successfully.");
+        // console.log("✅ Blog created successfully.");
 
         // Check if sharing to social media failed
         if (response.socialMediaStatus && !response.socialMediaStatus.success) {
           console.warn("⚠️ Some social media shares failed:");
-          console.log(response.socialMediaStatus.results);
+          // console.log(response.socialMediaStatus.results);
           setErrorResults(response.socialMediaStatus.results || []);
           setBlogId(response.blog._id);
           setShowErrorModal(true);
         } else {
-          console.log("🎉 Shared on all platforms successfully!");
+          // console.log("🎉 Shared on all platforms successfully!");
           toast.success("Post created and distributed successfully!");
           onSuccess();
         }
@@ -977,7 +976,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           />
 
           {selectedPlatforms.includes("snapchat") && (
-            <div className="bg-yellow-300 rounded-2xl p-2 my-5  transition-all ease-in-out duration-300">
+            <div className="p-2 my-5 transition-all duration-300 ease-in-out bg-yellow-300 rounded-2xl">
               <p className="text-lg">
                 Note: Please ensure that you wait at least 5 minutes before
                 uploading another post to Snapchat. Continuous or rapid uploads
@@ -1122,20 +1121,20 @@ const PublisherForm = ({ onBack, onSuccess }) => {
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-4">
-            <button
+            {/* <button
               type="button"
               className="flex items-center px-6 py-2 space-x-2 text-blue-700 transition-colors bg-blue-100 rounded-md hover:bg-blue-200"
             >
               <Calendar size={16} />
               <span>Schedule Post</span>
-            </button>
+            </button> */}
 
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || selectedPlatforms.length === 0}
-              className={`flex items-center px-6 py-2 space-x-2 text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-70`}
+              className={`flex items-center px-6 py-2 space-x-2 text-white transition-colors bg-gradient-to-r from-blue-600 to-purple-600 rounded-md disabled:cursor-not-allowed disabled:opacity-70`}
             >
-              <span className="flex justify-center items-center p-2 gap-3 ">
+              <span className="flex items-center justify-center gap-3 p-2 ">
                 Publish Post
                 {isSubmitting && (
                   <>

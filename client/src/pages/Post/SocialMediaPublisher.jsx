@@ -5,7 +5,6 @@ import PublisherForm from "../../components/post/PublisherForm";
 // Main Application Component
 const SocialMediaPublisher = () => {
   const [currentView, setCurrentView] = useState("dashboard"); // 'dashboard' or 'create'
-  console.log("currentView: ", currentView);
 
   const handleCreatePost = () => {
     setCurrentView("create");
@@ -22,7 +21,7 @@ const SocialMediaPublisher = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl p-6 mx-auto">
       {currentView === "dashboard" ? (
         <PostsDashboard onCreatePost={handleCreatePost} />
       ) : (

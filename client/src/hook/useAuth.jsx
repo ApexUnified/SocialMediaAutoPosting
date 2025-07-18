@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { authService } from '../services/authService';
+import { useState, useEffect } from "react";
+import { authService } from "../services/authService";
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -8,7 +8,7 @@ export const useAuth = () => {
 
   // Initialize auth state
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       fetchUserProfile();
     } else {
@@ -23,11 +23,11 @@ export const useAuth = () => {
       setUser(userData);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
-      setError(error.response?.data?.message || 'Failed to fetch user profile');
+      console.error("Error fetching user profile:", error);
+      setError(error.response?.data?.message || "Failed to fetch user profile");
       setLoading(false);
       // Clear invalid token
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
     }
   };
 
@@ -41,8 +41,8 @@ export const useAuth = () => {
       setLoading(false);
       return user;
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.response?.data?.message || 'Login failed');
+      console.error("Login error:", error);
+      setError(error.response?.data?.message || "Login failed");
       setLoading(false);
       throw error;
     }
@@ -51,7 +51,7 @@ export const useAuth = () => {
   // Logout
   const logout = async () => {
     authService.logout();
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -65,8 +65,8 @@ export const useAuth = () => {
       setLoading(false);
       return user;
     } catch (error) {
-      console.error('Registration error:', error);
-      setError(error.response?.data?.message || 'Registration failed');
+      console.error("Registration error:", error);
+      setError(error.response?.data?.message || "Registration failed");
       setLoading(false);
       throw error;
     }
@@ -82,8 +82,8 @@ export const useAuth = () => {
       setLoading(false);
       return updatedUser;
     } catch (error) {
-      console.error('Profile update error:', error);
-      setError(error.response?.data?.message || 'Failed to update profile');
+      console.error("Profile update error:", error);
+      setError(error.response?.data?.message || "Failed to update profile");
       setLoading(false);
       throw error;
     }
@@ -96,7 +96,7 @@ export const useAuth = () => {
 
   // Get auth token
   const getToken = () => {
-    return localStorage.getItem('token');
+    return localStorage.getItem("token");
   };
 
   return {
@@ -108,6 +108,6 @@ export const useAuth = () => {
     register,
     updateProfile,
     isAuthenticated,
-    getToken
+    getToken,
   };
 };

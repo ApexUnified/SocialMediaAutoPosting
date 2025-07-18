@@ -110,6 +110,7 @@ export const createBlog = async (req, res) => {
       mediaUrls,
       autoPublish,
       autoShare,
+      aiGenerated,
       platforms,
       autoTranslate,
       metadata,
@@ -117,7 +118,8 @@ export const createBlog = async (req, res) => {
     console.log("mediaUrls: ", mediaUrls);
     // Calculate metadata
     const postMetadata = calculateMetadata(content);
-
+    // console.log(req.body);
+    console.log(req.aiGenerated);
 
     let blog;
 
@@ -147,7 +149,7 @@ export const createBlog = async (req, res) => {
       blog.author = req.user._id;
       blog.hospital = req.user.hospitalId;
       blog.status = autoPublish ? "published" : "draft";
-      blog.creationType = req.user.role === "ai_journalist" ? "ai_journalist" : "manual";
+      blog.creationType = aiGenerated ? "ai_journalist" : "manual";
       blog.metadata = {
         ...postMetadata,
         lastModified: new Date(),
@@ -174,7 +176,7 @@ export const createBlog = async (req, res) => {
         author: req.user._id,
         hospital: req.user.hospitalId,
         status: autoPublish ? "published" : "draft",
-        creationType: req.user.role === "ai_journalist" ? "ai_journalist" : "manual",
+        creationType: aiGenerated ? "ai_journalist" : "manual",
         metadata: {
           ...postMetadata,
           lastModified: new Date(),

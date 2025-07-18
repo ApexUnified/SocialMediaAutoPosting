@@ -1,4 +1,6 @@
-/** @type {import('tailwindcss').Config} */
+import colors from 'tailwindcss/colors'
+
+// /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
@@ -7,6 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        ...colors, // ✅ This imports all Tailwind colors
         primary: "#3A3A3C",
         secondary: "#1C1C1E",
         accent: "#D1D1D6",
@@ -19,4 +22,4 @@ export default {
     },
   },
   plugins: [],
-} 
+}

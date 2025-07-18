@@ -23,7 +23,7 @@ class BlogService {
 
   async create(blogData) {
     try {
-      console.log(blogData);
+      // console.log(blogData);
       const response = await this.api.post("/blogs", {
         ...blogData,
         autoShare: true, // Enable automatic sharing by default
