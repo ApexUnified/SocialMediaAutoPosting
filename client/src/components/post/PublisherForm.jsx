@@ -1065,7 +1065,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
                   Additional Options
                 </label>
                 <div className="space-y-3 text-sm">
-                  <label className="flex items-center space-x-2">
+                  {/* <label className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       name="autoTranslate"
@@ -1077,7 +1077,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
                   </label>
                   <p className="ml-6 text-xs text-gray-500">
                     Automatically translate content to multiple languages
-                  </p>
+                  </p> */}
 
                   {/* Shorten Links Option */}
                   <label className="flex items-center space-x-2">
