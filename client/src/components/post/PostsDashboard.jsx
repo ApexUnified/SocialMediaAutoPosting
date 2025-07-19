@@ -622,35 +622,37 @@ const PostsDashboard = ({ onCreatePost }) => {
       {pagination.pages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <button
+            className="p-3 mt-10 transition-colors border border-gray-300 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-3 mt-10 transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 "
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={16} className="text-white" />
           </button>
 
-          {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(
-            (page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-4 py-3 mt-10 rounded-lg font-medium transition-colors ${
-                  currentPage === page
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                    : "hover:bg-gray-50"
-                }`}
-              >
-                {page}
-              </button>
-            )
-          )}
+          <div className="hidden md:flex">
+            {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-3 mt-10 rounded-lg font-medium transition-colors ${
+                    currentPage === page
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                      : "hover:bg-gray-50"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
 
           <button
+            className="p-3 mt-10 transition-colors rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === pagination.pages}
-            className="p-3 mt-10 transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
           >
-            <ArrowRight size={16} />
+            <ArrowRight size={16} className="text-white" />
           </button>
         </div>
       )}
