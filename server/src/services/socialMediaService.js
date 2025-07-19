@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const AYRSHARE_API_KEY = process.env.AYRSHARE_API_KEY;
-const AYRSHARE_API_URL = "https://app.ayrshare.com/api";
+const AYRSHARE_API_URL = "https://api.ayrshare.com/api/";
 
 const ayrshareClient = axios.create({
   baseURL: AYRSHARE_API_URL,

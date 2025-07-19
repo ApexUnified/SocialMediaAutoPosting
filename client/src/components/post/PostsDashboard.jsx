@@ -71,46 +71,50 @@ const EnhancedPostCard = ({ post }) => {
 
   const getPlatformIcon = (share) => {
     const platform = share.platform;
-    // console.log("share: ", share);
+
     const platformConfig = {
       bluesky: {
-        bg: share.postUrl
-          ? "bg-sky-500"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-sky-500"
+            : "bg-neutral-300",
         icon: "🦋",
         text: "BS",
       },
 
       facebook: {
-        bg: share.postUrl
-          ? "bg-blue-600"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-blue-600"
+            : "bg-neutral-300",
         icon: "📘",
         text: "f",
         style: { backgroundColor: "#1877F2" },
       },
 
       gmb: {
-        bg: share.postUrl
-          ? "bg-blue-500"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-blue-500"
+            : "bg-neutral-300",
         icon: "🏢",
         text: "G",
         style: { backgroundColor: "#4285F4" },
       },
 
       instagram: {
-        bg: !share.postUrl
-          ? "bg-red-600"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-900"
+            : share.postUrl
+            ? "bg-red-600"
+            : "bg-neutral-300",
         icon: "📷",
         text: "ig",
         ...(share.postUrl &&
@@ -122,96 +126,105 @@ const EnhancedPostCard = ({ post }) => {
       },
 
       linkedin: {
-        bg: share.postUrl
-          ? "bg-blue-500"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-blue-500"
+            : "bg-neutral-300",
         icon: "💼",
         text: "in",
         style: { backgroundColor: "#0A66C2" },
       },
 
       pinterest: {
-        bg: share.postUrl
-          ? "bg-red-600"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-800",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-red-600"
+            : "bg-neutral-300",
         icon: "📌",
         text: "P",
         style: { backgroundColor: "#E60023" },
       },
 
       reddit: {
-        bg: share.postUrl
-          ? "bg-orange-600"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-orange-600"
+            : "bg-neutral-300",
         icon: "🤖",
         text: "r",
         style: { backgroundColor: "#FF4500" },
       },
 
       telegram: {
-        bg: share.postUrl
-          ? "bg-blue-500"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-blue-500"
+            : "bg-neutral-300",
         icon: "✈️",
         text: "T",
         style: { backgroundColor: "#0088cc" },
       },
 
       threads: {
-        bg: share.postUrl
-          ? "bg-black"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-black"
+            : "bg-neutral-300",
         icon: "🧵",
         text: "@",
       },
 
       tiktok: {
-        bg: share.postUrl
-          ? "bg-black"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-black"
+            : "bg-neutral-300",
         icon: "🎵",
         text: "TT",
       },
 
       twitter: {
-        bg: share.postUrl
-          ? "bg-black"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-black"
+            : "bg-neutral-300",
         icon: "🐦",
         text: "𝕏",
       },
 
       youtube: {
-        bg: share.postUrl
-          ? "bg-red-600"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-800",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-red-600"
+            : "bg-neutral-300",
         icon: "📺",
         text: "▶",
         style: { backgroundColor: "#FF0000" },
       },
 
       snapchat: {
-        bg: share.postUrl
-          ? "bg-yellow-400"
-          : share.status === "failed"
-          ? "bg-rose-700"
-          : "bg-red-600",
+        bg:
+          share.status === "failed"
+            ? "bg-rose-700"
+            : share.postUrl
+            ? "bg-yellow-400"
+            : "bg-neutral-300",
         icon: "👻",
         text: "👻",
         style: { backgroundColor: "#FFFC00" },
