@@ -97,7 +97,9 @@ const Header = ({ toggleSidebar }) => {
             </button>
             <Link to="/" className="flex items-center space-x-2">
               <span className="text-xl font-bold text-primary">
-                {lang === "en" ? "Hospital Social" : "병원 소셜"}
+                {lang === "en"
+                  ? "Metabread – Your AI-Powered Social Assistant"
+                  : "메타브래드 - AI 소셜미디어 어시스턴트"}
               </span>
             </Link>
           </div>

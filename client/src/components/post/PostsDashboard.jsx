@@ -76,7 +76,7 @@ const EnhancedPostCard = ({ post }) => {
         : "AI 생성"
       : lang === "en"
       ? "Manual"
-      : "매뉴얼";
+      : "수동 생성";
   };
 
   const getPlatformIcon = (share) => {
@@ -86,7 +86,7 @@ const EnhancedPostCard = ({ post }) => {
       bluesky: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-sky-500"
             : "bg-neutral-300",
@@ -97,31 +97,29 @@ const EnhancedPostCard = ({ post }) => {
       facebook: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-blue-600"
             : "bg-neutral-300",
         icon: "📘",
         text: "f",
-        style: { backgroundColor: "#1877F2" },
       },
 
       gmb: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-blue-500"
             : "bg-neutral-300",
         icon: "🏢",
         text: "G",
-        style: { backgroundColor: "#4285F4" },
       },
 
       instagram: {
         bg:
           share.status === "failed"
-            ? "bg-rose-900"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-red-600"
             : "bg-neutral-300",
@@ -138,55 +136,51 @@ const EnhancedPostCard = ({ post }) => {
       linkedin: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-blue-500"
             : "bg-neutral-300",
         icon: "💼",
         text: "in",
-        style: { backgroundColor: "#0A66C2" },
       },
 
       pinterest: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-red-600"
             : "bg-neutral-300",
         icon: "📌",
         text: "P",
-        style: { backgroundColor: "#E60023" },
       },
 
       reddit: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-orange-600"
             : "bg-neutral-300",
         icon: "🤖",
         text: "r",
-        style: { backgroundColor: "#FF4500" },
       },
 
       telegram: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-blue-500"
             : "bg-neutral-300",
         icon: "✈️",
         text: "T",
-        style: { backgroundColor: "#0088cc" },
       },
 
       threads: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-black"
             : "bg-neutral-300",
@@ -197,7 +191,7 @@ const EnhancedPostCard = ({ post }) => {
       tiktok: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-black"
             : "bg-neutral-300",
@@ -208,7 +202,7 @@ const EnhancedPostCard = ({ post }) => {
       twitter: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-black"
             : "bg-neutral-300",
@@ -219,25 +213,23 @@ const EnhancedPostCard = ({ post }) => {
       youtube: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-red-600"
             : "bg-neutral-300",
         icon: "📺",
         text: "▶",
-        style: { backgroundColor: "#FF0000" },
       },
 
       snapchat: {
         bg:
           share.status === "failed"
-            ? "bg-rose-700"
+            ? "bg-pink-800"
             : share.postUrl
             ? "bg-yellow-400"
             : "bg-neutral-300",
         icon: "👻",
         text: "👻",
-        style: { backgroundColor: "#FFFC00" },
       },
     };
 
@@ -616,7 +608,7 @@ const PostsDashboard = ({ onCreatePost }) => {
                   : status === "manual"
                   ? lang === "en"
                     ? "Manual"
-                    : "매뉴얼"
+                    : "수동 생성"
                   : status === "published"
                   ? lang === "en"
                     ? "Published"
@@ -657,12 +649,18 @@ const PostsDashboard = ({ onCreatePost }) => {
             <Search className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="mb-2 text-lg font-semibold text-gray-900">
-            No posts found
+            {lang === "en" ? "No posts found" : "게시물이 없습니다"}
           </h3>
           <p className="mb-4 text-gray-600">
             {searchTerm
-              ? `No posts match "${searchTerm}"`
-              : `No ${filter} posts found`}
+              ? `${
+                  lang === "en"
+                    ? "No posts match"
+                    : "일치하는 게시물이 없습니다"
+                } "${searchTerm}"`
+              : `${lang === "en" ? "No" : "아니요"} ${filter}  ${
+                  lang === "en" ? "Posts Found" : "게시물 발견됨"
+                }`}
           </p>
           <button
             onClick={() => {
@@ -671,7 +669,7 @@ const PostsDashboard = ({ onCreatePost }) => {
             }}
             className="font-medium text-blue-600 hover:text-blue-700"
           >
-            Clear filters
+            {lang === "en" ? "Clear filters" : "필터 초기화"}
           </button>
         </div>
       )}

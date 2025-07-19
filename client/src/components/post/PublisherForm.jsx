@@ -1180,7 +1180,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
         <div className="w-full max-w-lg p-6 mx-4 bg-white rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold text-gray-900">
-              Publishing Errors
+              {lang === "en" ? "Publishing Errors" : "게시 오류"}
             </h3>
             <button
               onClick={() => setShowErrorModal(false)}
@@ -1202,7 +1202,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
               onClick={() => setShowErrorModal(false)}
               className="px-4 py-2 text-gray-700 transition-colors bg-gray-100 rounded-md hover:bg-gray-200"
             >
-              Close
+              {lang === "en" ? "Close" : "닫기"}
             </button>
           </div>
         </div>
@@ -1221,7 +1221,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {lang === "en" ? "Publish a Post" : "게시된 날짜"}
+              {lang === "en" ? "Post Distribution" : "게시물 배포"}
             </h1>
             <p className="text-sm text-gray-600">
               {lang === "en"
