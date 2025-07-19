@@ -179,13 +179,19 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     ];
 
     const textRequiredPlatforms = [
+      "bluesky",
       "facebook",
+      "gmb",
       "linkedin",
       "x/twitter",
-      "gmb",
       "telegram",
-      "bluesky",
+      "instagram",
       "reddit",
+      "threads",
+      "pinterest",
+      "snapchat",
+      "tiktok",
+      "youtube",
     ];
 
     const platformNames = {
