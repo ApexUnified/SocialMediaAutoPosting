@@ -1,19 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Home, Calendar, Building2, FileText, Settings, X } from "lucide-react";
 import Logo from "../icons/Logo";
 import { useAuth } from "../../hook/useAuth";
-
-const navigation = [
-  // { name: 'Dashboard', href: '/#', icon: Home },
-  // { name: 'Reservations', href: '/reservations', icon: Calendar },
-  // { name: 'Hospitals', href: '/hospitals', icon: Building2 },
-  { name: "Posts", href: "/posts", icon: FileText },
-  // { name: 'Settings', href: '/settings', icon: Settings },
-];
+import useLanguage from "../../hook/useLanguage";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
+
+  const { lang } = useLanguage();
+
+  const [navigation, setNavigation] = useState([]);
+
+  useEffect(() => {
+    setNavigation([
+      // { name: 'Dashboard', href: '/#', icon: Home },
+      // { name: 'Reservations', href: '/reservations', icon: Calendar },
+      // { name: 'Hospitals', href: '/hospitals', icon: Building2 },
+      {
+        name: lang === "en" ? "Posts" : "게시물",
+        href: "/posts",
+        icon: FileText,
+      },
+      // { name: 'Settings', href: '/settings', icon: Settings },
+    ]);
+  }, [lang]);
+
   return (
     <>
       {/* Overlay */}

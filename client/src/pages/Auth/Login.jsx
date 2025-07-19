@@ -1,21 +1,42 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { useAuth } from "../../hook/useAuth";
 import Logo from "../../components/icons/Logo";
+import useLanguage from "../../hook/useLanguage";
 
 // Define the login form schema
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
 
 const Login = () => {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const { login, loading, error } = useAuth();
+
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .email(
+            lang === "en"
+              ? "Please enter a valid email address"
+              : "유효한 이메일 주소를 입력하세요."
+          ),
+        password: z
+          .string()
+          .min(
+            6,
+            lang === "en"
+              ? "Password must be at least 6 characters"
+              : "비밀번호는 최소 6자 이상이어야 합니다."
+          ),
+      }),
+    [lang]
+  );
+
   const {
     register,
     handleSubmit,
@@ -48,7 +69,7 @@ const Login = () => {
           <Logo />
         </div>
         <h2 className="text-3xl font-extrabold text-center text-primary">
-          Sign in to your account
+          {lang === "en" ? "Sign in to your account" : "계정에 로그인하세요."}
         </h2>
         {/* <p className="mt-2 text-sm text-center text-gray">
           Or{" "}
@@ -122,13 +143,13 @@ const Login = () => {
             disabled={isSubmitting || loading}
             className="flex justify-center w-full gap-3 px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-gradient-to-r from-blue-600 to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign in
+            {lang === "en" ? "Sign in" : "로그인"}
             {isSubmitting && (
               <>
                 <div role="status">
                   <svg
                     aria-hidden="true"
-                    class="w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                    className="w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                     viewBox="0 0 100 101"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"

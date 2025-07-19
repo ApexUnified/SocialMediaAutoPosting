@@ -24,9 +24,11 @@ import { format } from "date-fns";
 import { platforms } from "../../../utils/constants";
 import imageThumbnail from "../../assets/image-thumbnail-blog.jpg";
 import videoThumbnail from "../../assets/video-thumbnail-blog.jpg";
+import useLanguage from "../../hook/useLanguage";
 
 // Enhanced Post Card Component
 const EnhancedPostCard = ({ post }) => {
+  const { lang } = useLanguage();
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
@@ -68,7 +70,13 @@ const EnhancedPostCard = ({ post }) => {
   };
 
   const getCreationTypeBadge = (type) => {
-    return type === "ai_journalist" ? "AI Generated" : "Manual";
+    return type === "ai_journalist"
+      ? lang === "en"
+        ? "AI Generated"
+        : "AI 생성"
+      : lang === "en"
+      ? "Manual"
+      : "매뉴얼";
   };
 
   const getPlatformIcon = (share) => {
@@ -305,7 +313,21 @@ const EnhancedPostCard = ({ post }) => {
                   post.status
                 )}`}
               >
-                {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                {lang === "en"
+                  ? post.status
+                  : post.status === "published"
+                  ? lang === "en"
+                    ? "Published"
+                    : "게시됨"
+                  : post.status === "draft"
+                  ? lang === "en"
+                    ? "Draft"
+                    : "초안"
+                  : post.status === "scheduled"
+                  ? lang === "en"
+                    ? "Scheduled"
+                    : "예약됨"
+                  : ""}
               </span>
               <span className="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded-full">
                 {getCreationTypeBadge(post.creationType)}
@@ -367,14 +389,17 @@ const EnhancedPostCard = ({ post }) => {
             <div className="my-1 text-sm text-white ">
               {post.socialMediaShares[0]?.publishedAt && (
                 <span>
-                  Published {formatTime(post.socialMediaShares[0].publishedAt)}
+                  {lang === "en" ? "Published" : "게시됨"}{" "}
+                  {formatTime(post.socialMediaShares[0].publishedAt)}
                 </span>
               )}
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-white">Published on:</span>
+                <span className="text-sm text-white">
+                  {lang === "en" ? "Published on" : "게시된 날짜"}:
+                </span>
                 <div className="flex flex-wrap items-start gap-1">
                   {post.socialMediaShares.map((share, index) => (
                     <a
@@ -431,7 +456,7 @@ const PostsDashboard = ({ onCreatePost }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const { lang } = useLanguage();
   // Your existing fetchPosts function
   const fetchPosts = async (page = 1) => {
     setLoading(true);
@@ -512,18 +537,25 @@ const PostsDashboard = ({ onCreatePost }) => {
             <FileText className="w-10 h-10 text-blue-500" />
           </div>
           <h3 className="mb-3 text-2xl font-bold text-gray-900">
-            Ready to create amazing content?
+            {lang === "en"
+              ? "Ready to create amazing content?"
+              : "멋진 콘텐츠를 만들 준비가 되었나요?"}
           </h3>
           <p className="mb-8 leading-relaxed text-gray-600">
-            Get started by creating your first post and sharing it across
-            multiple platforms to reach your audience.
+            {lang === "en"
+              ? " Get started by creating your first post and sharing it across multiple platforms to reach your audience."
+              : "첫 번째 게시물을 만들어 여러 플랫폼에 공유하여 청중에 도달하세요."}
           </p>
           <button
             onClick={onCreatePost}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-3 mx-auto font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
             <Plus size={20} />
-            <span>Create Your First Post</span>
+            <span>
+              {lang === "en"
+                ? "Create Your First Post"
+                : "첫 번째 게시물 만들기"}
+            </span>
           </button>
         </div>
       </div>
@@ -543,7 +575,7 @@ const PostsDashboard = ({ onCreatePost }) => {
           className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-2 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-fit"
         >
           <Plus size={18} />
-          <span>Create Post</span>
+          <span>{lang === "en" ? "Create Post" : "게시물 만들기"}</span>
         </button>
       </div>
 
@@ -558,7 +590,7 @@ const PostsDashboard = ({ onCreatePost }) => {
             />
             <input
               type="search"
-              placeholder="Search posts..."
+              placeholder={lang === "en" ? "Search posts..." : "게시물 검색..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full py-3 pl-10 pr-4 transition-all duration-200 border border-slate-500 rounded-xl"
@@ -578,9 +610,21 @@ const PostsDashboard = ({ onCreatePost }) => {
                 }`}
               >
                 {status === "ai"
-                  ? "AI Generated"
+                  ? lang === "en"
+                    ? "AI Generated"
+                    : "AI 생성"
                   : status === "manual"
-                  ? "Manual"
+                  ? lang === "en"
+                    ? "Manual"
+                    : "매뉴얼"
+                  : status === "published"
+                  ? lang === "en"
+                    ? "Published"
+                    : "게시됨"
+                  : status === "all"
+                  ? lang === "en"
+                    ? "All"
+                    : "모두"
                   : status.charAt(0).toUpperCase() + status.slice(1)}
                 {status === "all" && (
                   <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
@@ -593,8 +637,9 @@ const PostsDashboard = ({ onCreatePost }) => {
         </div>
 
         <div className="px-4 py-2 text-sm text-gray-600 rounded-lg bg-gray-50 whitespace-nowrap">
-          {pagination.total} total posts • Page {pagination.page} of{" "}
-          {pagination.pages}
+          {pagination.total} {lang === "en" ? "total posts" : "총 게시물"} •{" "}
+          {lang === "en" ? "Page" : "페이지"} {pagination.page}{" "}
+          {lang === "en" ? "of" : "의"} {pagination.pages}
         </div>
       </div>
 
@@ -633,7 +678,7 @@ const PostsDashboard = ({ onCreatePost }) => {
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <button
             className="p-3 mt-10 transition-colors border border-gray-300 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => handlePageChange(currentPage - 1)}

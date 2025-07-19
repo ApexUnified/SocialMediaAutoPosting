@@ -7,6 +7,7 @@ import MediaURLManager from "./MediaURLManager";
 import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
+import useLanguage from "../../hook/useLanguage";
 
 // Publisher Form Component
 const PublisherForm = ({ onBack, onSuccess }) => {
@@ -32,6 +33,8 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     contentType: "general",
     mediaUrls: [],
   });
+
+  const { lang } = useLanguage();
 
   // its for getting the blog id If Post Fails On Social Media To Prevent Duplicate Blogs
   const [blogId, setBlogId] = useState(null);
@@ -77,11 +80,21 @@ const PublisherForm = ({ onBack, onSuccess }) => {
 
   const handleAIGenerate = async () => {
     if (!selectedPlatforms.length) {
-      toast.error("Please select at least one platform");
+      toast.error(
+        lang === "en"
+          ? "Please select at least one platform"
+          : "적어도 하나의 플랫폼을 선택하세요"
+      );
+
       return;
     }
     if (!formData.prompt) {
-      toast.error("Please enter a prompt for AI generation");
+      toast.error(
+        lang === "en"
+          ? "Please enter a prompt for AI generation"
+          : "AI 생성을 위한 프롬프트를 입력하세요"
+      );
+
       return;
     }
 
@@ -101,10 +114,18 @@ const PublisherForm = ({ onBack, onSuccess }) => {
         mediaUrls: generatedContent.mediaUrls || prev.mediaUrls,
       }));
 
-      toast.success("Content generated successfully!");
+      toast.success(
+        lang === "en"
+          ? "Content generated successfully!"
+          : "콘텐츠가 성공적으로 생성되었습니다!"
+      );
     } catch (error) {
-      console.error("Error generating content:", error);
-      toast.error(error.message || "Failed to generate content");
+      toast.error(
+        error.message ||
+          (lang === "en"
+            ? "Failed to generate content"
+            : "콘텐츠 생성에 실패했습니다")
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -130,7 +151,10 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
     } catch (error) {
       throw new Error(
-        error.response?.data?.message || "Failed to validate media"
+        error.response?.data?.message ||
+          (lang === "en"
+            ? "Failed to validate media"
+            : "미디어 검증에 실패했습니다")
       );
     }
   }
@@ -144,25 +168,35 @@ const PublisherForm = ({ onBack, onSuccess }) => {
 
       if (!file.includes(".")) {
         throw new Error(
-          "Please enter a valid media URL. Accepted extensions: " +
-            allowedImageExtensions.join(", ")
+          lang === "en"
+            ? "Please enter a valid media URL. Accepted extensions: " +
+              allowedImageExtensions.join(", ")
+            : "유효한 미디어 URL을 입력하세요. 허용되는 확장자: " +
+              allowedImageExtensions.join(", ")
         );
       }
 
       const ext = file.split(".").pop().toLowerCase();
       if (!allowedImageExtensions.includes(ext)) {
         throw new Error(
-          `Invalid media extension '${ext}'. Accepted: ${allowedImageExtensions.join(
-            ", "
-          )}`
+          lang === "en"
+            ? `Invalid media extension '${ext}'. Accepted: ${allowedImageExtensions.join(
+                ", "
+              )}`
+            : `잘못된 미디어 확장자 '${ext}'입니다. 허용되는 확장자: ${allowedImageExtensions.join(
+                ", "
+              )}`
         );
       }
 
       return true;
     } catch (err) {
       throw new Error(
-        "Please enter a valid media URL. Accepted extensions: " +
-          allowedImageExtensions.join(", ")
+        lang === "en"
+          ? "Please enter a valid media URL. Accepted extensions: " +
+            allowedImageExtensions.join(", ")
+          : "유효한 미디어 URL을 입력하세요. 허용되는 확장자: " +
+            allowedImageExtensions.join(", ")
       );
     }
   }
@@ -227,7 +261,12 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       const platformList = missingMedia
         .map((p) => platformNames[p.toLowerCase()] || p)
         .join(", ");
-      toast.error(`Please upload at least one URL for: ${platformList}`);
+      toast.error(
+        lang === "en"
+          ? `Please upload at least one URL for: ${platformList}`
+          : `${platformList}에 대해 최소한 하나의 URL을 업로드하세요`
+      );
+
       return false;
     }
 
@@ -243,36 +282,64 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       const platformList = missingText
         .map((p) => platformNames[p.toLowerCase()] || p)
         .join(", ");
-      toast.error(`Please enter a post title AND text for: ${platformList}`);
+      toast.error(
+        lang === "en"
+          ? `Please enter a post title AND text for: ${platformList}`
+          : `${platformList}에 대해 게시물 제목과 내용을 모두 입력하세요`
+      );
+
       return false;
     }
 
     // 3. Reddit specific: Require redditLink
     if (selectedPlatforms.includes("reddit") && !formData.redditLink.trim()) {
-      toast.error("Please enter a valid Reddit link");
+      toast.error(
+        lang === "en"
+          ? "Please enter a valid Reddit link"
+          : "유효한 Reddit 링크를 입력하세요"
+      );
+
       return false;
     }
 
     if (selectedPlatforms.includes("gmb")) {
       if (trimmed.length > 1500) {
         toast.error(
-          `Google Business  Post Text Length Cannot Be Greater Than 1500 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Google Business Post Text Length Cannot Be Greater Than 1500 characters. Your post is ${trimmed.length} characters.`
+            : `Google 비즈니스 게시물의 텍스트 길이는 1500자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (images.length > 1) {
-        toast.error("Please upload only 1 image for Google Business");
+        toast.error(
+          lang === "en"
+            ? "Please upload only 1 image for Google Business"
+            : "Google 비즈니스에는 이미지 1개만 업로드할 수 있습니다"
+        );
+
         return false;
       }
 
       if (videos.length > 0) {
-        toast.error("Google Business Doesnt supports video.");
+        toast.error(
+          lang === "en"
+            ? "Google Business doesn't support video."
+            : "Google 비즈니스는 동영상을 지원하지 않습니다."
+        );
+
         return false;
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error("Google Business Doesnt accept both image and video.");
+        toast.error(
+          lang === "en"
+            ? "Google Business doesn't accept both image and video."
+            : "Google 비즈니스는 이미지와 동영상을 동시에 업로드할 수 없습니다."
+        );
+
         return false;
       }
 
@@ -293,25 +360,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("bluesky")) {
       if (trimmed.length > 299) {
         toast.error(
-          `Bluesky  Post Text Length Cannot Be Greater Than 299 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Bluesky Post Text Length Cannot Be Greater Than 299 characters. Your post is ${trimmed.length} characters.`
+            : `Bluesky 게시물의 텍스트 길이는 299자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("BlueSky supports only one video at a time.");
+        toast.error(
+          lang === "en"
+            ? "BlueSky supports only one video at a time."
+            : "BlueSky는 한 번에 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
         toast.error(
-          "BlueSky cannot accept both image and video in the same post."
+          lang === "en"
+            ? "BlueSky cannot accept both image and video in the same post."
+            : "BlueSky는 하나의 게시물에 이미지와 동영상을 동시에 업로드할 수 없습니다."
         );
+
         return false;
       }
 
       if (images.length > 4) {
-        toast.error("BlueSky supports up to 4 images only.");
+        toast.error(
+          lang === "en"
+            ? "BlueSky supports up to 4 images only."
+            : "BlueSky는 최대 4개의 이미지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -340,25 +423,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("instagram")) {
       if (trimmed.length > 2200) {
         toast.error(
-          `Instagram  Post Text Length Cannot Be Greater Than 2200 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Instagram Post Text Length Cannot Be Greater Than 2200 characters. Your post is ${trimmed.length} characters.`
+            : `Instagram 게시물의 텍스트 길이는 2200자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("Instagram supports only one video at a time.");
+        toast.error(
+          lang === "en"
+            ? "Instagram supports only one video at a time."
+            : "Instagram은 한 번에 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
         toast.error(
-          "Instagram cannot accept both image and video in the same post."
+          lang === "en"
+            ? "Instagram cannot accept both image and video in the same post."
+            : "Instagram은 하나의 게시물에 이미지와 동영상을 동시에 업로드할 수 없습니다."
         );
+
         return false;
       }
 
       if (images.length > 10) {
-        toast.error("Instagram supports up to 10 images only.");
+        toast.error(
+          lang === "en"
+            ? "Instagram supports up to 10 images only."
+            : "Instagram은 최대 10개의 이미지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -389,25 +488,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       // console.log(trimmed.length);
       if (trimmed.length > 3000) {
         toast.error(
-          `LinkedIn  Post Text Length Cannot Be Greater Than 3000 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `LinkedIn Post Text Length Cannot Be Greater Than 3000 characters. Your post is ${trimmed.length} characters.`
+            : `LinkedIn 게시물의 텍스트 길이는 3000자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("Linkedin supports only one video at a time.");
+        toast.error(
+          lang === "en"
+            ? "LinkedIn supports only one video at a time."
+            : "LinkedIn은 한 번에 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
         toast.error(
-          "Linkedin cannot accept both image and video in the same post."
+          lang === "en"
+            ? "LinkedIn cannot accept both image and video in the same post."
+            : "LinkedIn은 이미지와 비디오를 동시에 포함한 게시물을 허용하지 않습니다."
         );
+
         return false;
       }
 
       if (images.length > 9) {
-        toast.error("Linkedin supports up to 9 images only.");
+        toast.error(
+          lang === "en"
+            ? "LinkedIn supports up to 9 images only."
+            : "LinkedIn은 최대 9장의 이미지까지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -437,25 +552,40 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("facebook")) {
       if (trimmed.length > 63206) {
         toast.error(
-          `Facebook  Post Text Length Cannot Be Greater Than 63206 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Facebook Post Text Length Cannot Be Greater Than 63,206 characters. Your post is ${trimmed.length} characters.`
+            : `Facebook 게시물 텍스트 길이는 최대 63,206자까지만 허용됩니다. 현재 게시물은 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("Facebook supports only one video at a time.");
+        toast.error(
+          lang === "en"
+            ? "Facebook supports only one video at a time."
+            : "Facebook은 한 번에 하나의 동영상만 지원합니다."
+        );
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
         toast.error(
-          "Facebook cannot accept both image and video in the same post."
+          lang === "en"
+            ? "Facebook cannot accept both image and video in the same post."
+            : "Facebook은 이미지와 동영상을 동시에 업로드할 수 없습니다."
         );
+
         return false;
       }
 
       if (images.length > 10) {
-        toast.error("Facebook supports up to 10 images only.");
+        toast.error(
+          lang === "en"
+            ? "Facebook supports up to 10 images only."
+            : "Facebook은 최대 10개의 이미지까지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -484,23 +614,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("reddit")) {
       if (trimmed.length > 5000) {
         toast.error(
-          `Reddit  Post Text Length Cannot Be Greater Than 5000 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Reddit Post Text Length Cannot Be Greater Than 5000 characters. Your post is ${trimmed.length} characters.`
+            : `Reddit 게시물 텍스트 길이는 5000자를 초과할 수 없습니다. 현재 길이: ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 0) {
-        toast.error("Reddit Doesnt supports video ");
+        toast.error(
+          lang === "en"
+            ? "Reddit doesn't support video."
+            : "Reddit는 동영상을 지원하지 않습니다."
+        );
+
         return false;
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error("Reddit doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "Reddit doesn't accept both image and video."
+            : "Reddit는 이미지와 동영상을 동시에 업로드할 수 없습니다."
+        );
+
         return false;
       }
 
       if (images.length > 1) {
-        toast.error("Reddit supports up to 1 images only Per Post.");
+        toast.error(
+          lang === "en"
+            ? "Reddit supports up to 1 image only per post."
+            : "Reddit는 게시물당 이미지 1개만 업로드할 수 있습니다."
+        );
+
         return false;
       }
 
@@ -521,23 +669,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("pinterest")) {
       if (trimmed.length > 500) {
         toast.error(
-          `Pinterest  Post Text Length Cannot Be Greater Than 500 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Pinterest Post Text Length Cannot Be Greater Than 500 characters. Your post is ${trimmed.length} characters.`
+            : `Pinterest 게시물 텍스트 길이는 500자를 초과할 수 없습니다. 현재 길이: ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 0) {
-        toast.error("Pinterest Doesnt supports video ");
+        toast.error(
+          lang === "en"
+            ? "Pinterest doesn't support video."
+            : "Pinterest는 비디오를 지원하지 않습니다."
+        );
+
         return false;
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error("Pinterest doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "Pinterest doesn't accept both image and video."
+            : "Pinterest는 이미지와 비디오를 동시에 업로드할 수 없습니다."
+        );
+
         return false;
       }
 
       if (images.length > 5) {
-        toast.error("Pinterest supports up to 5 images only Per Post.");
+        toast.error(
+          lang === "en"
+            ? "Pinterest supports up to 5 images only per post."
+            : "Pinterest는 게시물당 최대 5장의 이미지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -559,64 +725,73 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("telegram")) {
       if (trimmed.length > 1024) {
         toast.error(
-          `Telegram  Post Text Length Cannot Be Greater Than 1024 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Telegram Post Text Length Cannot Be Greater Than 1024 characters. Your post is ${trimmed.length} characters.`
+            : `Telegram 게시물 텍스트 길이는 1024자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 0) {
-        toast.error("Telegram Doesnt supports Videos");
+        toast.error(
+          lang === "en"
+            ? "Telegram Doesn't support videos."
+            : "Telegram은 동영상을 지원하지 않습니다."
+        );
+
         return false;
       }
 
       if (images.length > 0) {
-        toast.error("Telegram Doesnt supports images");
+        toast.error(
+          lang === "en"
+            ? "Telegram doesn't support images."
+            : "Telegram은 이미지를 지원하지 않습니다."
+        );
+
         return false;
       }
-
-      // try {
-      //   const imageExtensions = ["jpg", "jpeg", "png"];
-      //   const videoExtensions = ["mp4"];
-
-      //   for (const imgUrl of images) {
-      //     isValidExtension(imgUrl, imageExtensions);
-
-      //     // Check image sizes (max 5 MB each)
-      //     await checkMediaSize(imgUrl, 5, "Telegram");
-      //   }
-
-      //   for (const videoUrl of videos) {
-      //     isValidExtension(videoUrl, videoExtensions);
-
-      //     // Check video size (max 20 MB for Telegram)
-      //     await checkMediaSize(videoUrl, 20, "Telegram");
-      //   }
-      // } catch (err) {
-      //   toast.error(err.message);
-      //   return false;
-      // }
     }
 
     if (selectedPlatforms.includes("threads")) {
       if (trimmed.length > 500) {
         toast.error(
-          `Threads  Post Text Length Cannot Be Greater Than 500 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Threads post text cannot exceed 500 characters. Your post is ${trimmed.length} characters.`
+            : `Threads 게시물 텍스트는 500자를 초과할 수 없습니다. 현재 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("Threads Only supports 1 video Per Post ");
+        toast.error(
+          lang === "en"
+            ? "Threads only supports 1 video per post."
+            : "Threads는 게시물당 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error("Threads doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "Threads doesn't accept both image and video in the same post."
+            : "Threads는 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
+        );
+
         return false;
       }
 
       if (images.length > 20) {
-        toast.error("Threads supports up to 20 images only Per Post.");
+        toast.error(
+          lang === "en"
+            ? "Threads supports up to 20 images only per post."
+            : "Threads는 게시물당 최대 20개의 이미지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -645,23 +820,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("tiktok")) {
       if (trimmed.length > 2200) {
         toast.error(
-          `Tiktok  Post Text Length Cannot Be Greater Than 2200 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `TikTok post text length cannot be greater than 2200 characters. Your post is ${trimmed.length} characters.`
+            : `TikTok 게시물 텍스트 길이는 2200자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("TikTok Only supports 1 video Per Post ");
+        toast.error(
+          lang === "en"
+            ? "TikTok only supports 1 video per post."
+            : "TikTok은 게시물당 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error("TikTok doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "TikTok doesn't accept both image and video."
+            : "TikTok은 이미지와 동영상을 동시에 포함한 게시물을 허용하지 않습니다."
+        );
+
         return false;
       }
 
       if (images.length > 0) {
-        toast.error("TikTok Doesnt supports images .");
+        toast.error(
+          lang === "en"
+            ? "TikTok doesn't support images."
+            : "TikTok은 이미지를 지원하지 않습니다."
+        );
+
         return false;
       }
 
@@ -683,23 +876,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("twitter")) {
       if (trimmed.length > 280) {
         toast.error(
-          `Twitter  Post Text Length Cannot Be Greater Than 280 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `Twitter post text cannot be greater than 280 characters. Your post is ${trimmed.length} characters.`
+            : `Twitter 게시물 텍스트 길이는 280자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 4) {
-        toast.error("Twitter Only supports 4 video Per Post ");
+        toast.error(
+          lang === "en"
+            ? "Twitter only supports 4 videos per post."
+            : "Twitter는 게시물당 최대 4개의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error("Twitter doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "Twitter doesn't accept both image and video."
+            : "Twitter는 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
+        );
+
         return false;
       }
 
       if (images.length > 4) {
-        toast.error("Twitter supports up to 4 images only Per Post.");
+        toast.error(
+          lang === "en"
+            ? "Twitter supports up to 4 images only per post."
+            : "Twitter는 게시물당 최대 4개의 이미지만 지원합니다."
+        );
+
         return false;
       }
 
@@ -729,23 +940,41 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("youtube")) {
       if (trimmed.length > 5000) {
         toast.error(
-          `Youtube Post Text Length Cannot Be Greater Than 5000 characters. Your post is ${trimmed.length} characters.`
+          lang === "en"
+            ? `YouTube post text cannot be greater than 5000 characters. Your post is ${trimmed.length} characters.`
+            : `YouTube 게시물 텍스트 길이는 5000자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
         );
+
         return false;
       }
 
       if (videos.length > 1) {
-        toast.error("Youtube Only supports 1 video Per Post");
+        toast.error(
+          lang === "en"
+            ? "YouTube only supports 1 video per post."
+            : "YouTube는 게시물당 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error("Youtube doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "YouTube doesn't accept both image and video."
+            : "YouTube는 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
+        );
+
         return false;
       }
 
       if (images.length > 0) {
-        toast.error("Youtube Doesnt Support Images");
+        toast.error(
+          lang === "en"
+            ? "YouTube doesn't support images."
+            : "YouTube는 이미지를 지원하지 않습니다."
+        );
+
         return false;
       }
 
@@ -768,37 +997,63 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       if (!formData.snapchatPostType === "spotlight") {
         if (trimmed.length > 500) {
           toast.error(
-            `SnapChat  Post Text Length Cannot Be Greater Than 500 characters. Your post is ${trimmed.length} characters.`
+            lang === "en"
+              ? `Snapchat post text cannot be greater than 500 characters. Your post is ${trimmed.length} characters.`
+              : `Snapchat 게시물 텍스트 길이는 500자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
           );
+
           return false;
         }
       }
 
       if (videos.length > 1) {
-        toast.error("Snapchat Only supports 1 video Per Post");
+        toast.error(
+          lang === "en"
+            ? "Snapchat only supports 1 video per post."
+            : "Snapchat은 게시물당 하나의 동영상만 지원합니다."
+        );
+
         return false;
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error("Snapchat doesnt accept both image and video");
+        toast.error(
+          lang === "en"
+            ? "Snapchat doesn't accept both image and video."
+            : "Snapchat은 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
+        );
+
         return false;
       }
 
       if (images.length > 1) {
-        toast.error("Snapchat supports up to 1 image only Per Post.");
+        toast.error(
+          lang === "en"
+            ? "Snapchat supports up to 1 image only per post."
+            : "Snapchat은 게시물당 최대 1장의 이미지만 지원합니다."
+        );
+
         return false;
       }
 
       if (formData.snapchatPostType === "spotlight") {
         if (images.length > 0) {
-          toast.error("Snapchat Spotlight doesnt accept images");
+          toast.error(
+            lang === "en"
+              ? "Snapchat Spotlight doesn't accept images."
+              : "Snapchat Spotlight는 이미지를 지원하지 않습니다."
+          );
+
           return false;
         }
 
         if (trimmed.length > 160) {
           toast.error(
-            `SnapChat Spotlight  Post Text Length Cannot Be Greater Than 160 characters. Your post is ${trimmed.length} characters.`
+            lang === "en"
+              ? `Snapchat Spotlight post text cannot be greater than 160 characters. Your post is ${trimmed.length} characters.`
+              : `Snapchat Spotlight 게시물 텍스트 길이는 160자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
           );
+
           return false;
         }
       }
@@ -833,7 +1088,12 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     setIsSubmitting(true);
 
     if (!selectedPlatforms.length) {
-      toast.error("Please select at least one platform");
+      toast.error(
+        lang === "en"
+          ? "Please select at least one platform."
+          : "적어도 하나의 플랫폼을 선택하세요."
+      );
+
       setIsSubmitting(false);
       return;
     }
@@ -883,13 +1143,22 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           setShowErrorModal(true);
         } else {
           // console.log("🎉 Shared on all platforms successfully!");
-          toast.success("Post created and distributed successfully!");
+          toast.success(
+            lang === "en"
+              ? "Post created and distributed successfully!"
+              : "게시물이 성공적으로 생성되어 배포되었습니다!"
+          );
+
           onSuccess();
         }
       } else {
         // Handle total failure of blog creation
         console.error("❌ Failed to create the blog.");
-        alert("Failed to create blog. Please try again.");
+        alert(
+          lang === "en"
+            ? "Failed to create blog. Please try again."
+            : "블로그 생성에 실패했습니다. 다시 시도하세요."
+        );
       }
     } catch (error) {
       toast.error(error.message);
@@ -951,9 +1220,13 @@ const PublisherForm = ({ onBack, onSuccess }) => {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Publish a Post</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {lang === "en" ? "Publish a Post" : "게시된 날짜"}
+            </h1>
             <p className="text-sm text-gray-600">
-              Create and distribute content across multiple platforms
+              {lang === "en"
+                ? "Create and distribute content across multiple platforms"
+                : "다양한 플랫폼에 콘텐츠를 생성하고 배포하세요."}
             </p>
           </div>
         </div>
@@ -984,9 +1257,9 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           {selectedPlatforms.includes("snapchat") && (
             <div className="p-2 my-5 transition-all duration-300 ease-in-out bg-yellow-300 rounded-2xl">
               <p className="text-lg">
-                Note: Please ensure that you wait at least 5 minutes before
-                uploading another post to Snapchat. Continuous or rapid uploads
-                may result in temporary restrictions or failed attempts.
+                {lang === "en"
+                  ? "Note: Please ensure that you wait at least 5 minutes before uploading another post to Snapchat. Continuous or rapid uploads may result in temporary restrictions or failed attempts."
+                  : "참고: Snapchat에 다른 게시물을 업로드하기 전에 최소 5분 이상 기다려주세요. 연속적이거나 빠른 업로드는 일시적인 제한 또는 업로드 실패로 이어질 수 있습니다."}
               </p>
             </div>
           )}
@@ -996,14 +1269,18 @@ const PublisherForm = ({ onBack, onSuccess }) => {
             <div className="space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Post Title
+                  {lang === "en" ? "Post Title" : "게시물 제목"}
                 </label>
                 <input
                   type="text"
                   name="postTitle"
                   value={formData.postTitle}
                   onChange={handleInputChange}
-                  placeholder="Enter post title"
+                  placeholder={
+                    lang === "en"
+                      ? "Enter post title"
+                      : "게시물 제목을 입력하세요."
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -1012,28 +1289,36 @@ const PublisherForm = ({ onBack, onSuccess }) => {
                 <>
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Subreddit
+                      {lang === "en" ? "Subreddit" : "서브레딧"}
                     </label>
                     <input
                       type="text"
                       name="subreddit"
                       value={formData.subreddit}
                       onChange={handleInputChange}
-                      placeholder="Enter subreddit name"
+                      placeholder={
+                        lang === "en"
+                          ? "Enter subreddit name"
+                          : "서브레딧 이름을 입력하세요."
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700">
-                      Reddit Link
+                      {lang === "en" ? "Reddit Link" : "Reddit 링크"}
                     </label>
                     <input
                       type="text"
                       name="redditLink"
                       value={formData.redditLink}
                       onChange={handleInputChange}
-                      placeholder="Enter Reddit link (optional)"
+                      placeholder={
+                        lang === "en"
+                          ? "Enter Reddit link (optional)"
+                          : "Reddit 링크를 입력하세요 (선택 사항)."
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -1044,7 +1329,9 @@ const PublisherForm = ({ onBack, onSuccess }) => {
               {selectedPlatforms.includes("snapchat") && (
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-700">
-                    Snapchat Post Type
+                    {lang === "en"
+                      ? "Snapchat Post Type"
+                      : "Snapchat 게시물 유형"}
                   </label>
                   <select
                     name="snapchatPostType"
@@ -1057,7 +1344,9 @@ const PublisherForm = ({ onBack, onSuccess }) => {
                     <option value="spotlight">Spotlight</option>
                   </select>
                   <p className="mt-1 text-xs text-gray-500">
-                    Choose how your content will be shared on Snapchat
+                    {lang === "en"
+                      ? "Choose how your content will be shared on Snapchat"
+                      : "Snapchat에서 콘텐츠를 어떻게 공유할지 선택하세요."}
                   </p>
                 </div>
               )}
@@ -1067,7 +1356,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
             <div className="space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Additional Options
+                  {lang === "en" ? "Additional Options" : "추가 옵션"}
                 </label>
                 <div className="space-y-3 text-sm">
                   {/* <label className="flex items-center space-x-2">
@@ -1093,10 +1382,14 @@ const PublisherForm = ({ onBack, onSuccess }) => {
                       onChange={handleInputChange}
                       className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    <span>Shorten Links</span>
+                    <span>
+                      {lang === "en" ? "Shorten Links" : "링크 단축하기"}
+                    </span>
                   </label>
                   <p className="ml-6 text-xs text-gray-500">
-                    Track clicks and demographics
+                    {lang === "en"
+                      ? "Track clicks and demographics"
+                      : "클릭 수 및 인구 통계 추적"}
                   </p>
                 </div>
               </div>
@@ -1106,13 +1399,15 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           {/* Post Text */}
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Post Text
+              {lang === "en" ? "Post Text" : "게시물 내용"}
             </label>
             <textarea
               name="postText"
               value={formData.postText}
               onChange={handleInputChange}
-              placeholder="Enter post text"
+              placeholder={
+                lang === "en" ? "Enter post text" : "게시물 내용을 입력하세요."
+              }
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -1141,13 +1436,13 @@ const PublisherForm = ({ onBack, onSuccess }) => {
               className={`flex items-center px-6 py-2 space-x-2 text-white transition-colors bg-gradient-to-r from-blue-600 to-purple-600 rounded-md disabled:cursor-not-allowed disabled:opacity-70`}
             >
               <span className="flex items-center justify-center gap-3 p-2 ">
-                Publish Post
+                {lang === "en" ? "Publish Post" : "게시물 게시"}
                 {isSubmitting && (
                   <>
                     <div role="status">
                       <svg
                         aria-hidden="true"
-                        class="w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                        className="w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                         viewBox="0 0 100 101"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
