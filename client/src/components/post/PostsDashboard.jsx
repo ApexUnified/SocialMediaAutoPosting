@@ -22,6 +22,8 @@ import { blogService } from "../../services/blogService";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { platforms } from "../../../utils/constants";
+import imageThumbnail from "../../assets/image-thumbnail-blog.jpg";
+import videoThumbnail from "../../assets/video-thumbnail-blog.jpg";
 
 // Enhanced Post Card Component
 const EnhancedPostCard = ({ post }) => {
@@ -264,12 +266,11 @@ const EnhancedPostCard = ({ post }) => {
             }}
           />
           <div className="items-center justify-center hidden w-full h-full bg-gradient-to-br from-blue-800 to-pink-200">
-            <div className="text-center">
-              <FileText size={32} className="mx-auto mb-2 text-white" />
-              <span className="text-sm font-medium text-white">
-                Media Content
-              </span>
-            </div>
+            <img
+              src={videoThumbnail}
+              alt="Post media"
+              className="object-cover w-full h-full"
+            />
           </div>
           {/* Media count badge */}
           {post.media.length > 1 && (
@@ -281,12 +282,11 @@ const EnhancedPostCard = ({ post }) => {
       ) : (
         <div className="relative h-48">
           <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-800 to-pink-200">
-            <div className="text-center">
-              <XIcon size={40} className="mx-auto mb-2 text-white" />
-              <span className="text-sm font-medium text-white">
-                No Media Content
-              </span>
-            </div>
+            <img
+              src={imageThumbnail}
+              alt="Post media"
+              className="object-cover w-full h-full"
+            />
           </div>
         </div>
       )}
