@@ -128,7 +128,7 @@ export const validateMediaSize = async (req, res) => {
           return res.status(400).json({
             success: false,
             message: lang === "en"
-              ? `${platformName}: Video dimensions are ${width}x${height}px, which are outside the allowed range of ${minWidth}–${maxWidth}px width and ${minHeight}–${maxHeight}px height.`
+              ? `${platformName}: Video Resolution is ${width}x${height}px, which is outside the allowed range of ${minWidth}–${maxWidth}px width and ${minHeight}–${maxHeight}px height.`
               : `${platformName}: 비디오 해상도 ${width}x${height}px는 허용된 범위인 너비 ${minWidth}~${maxWidth}px, 높이 ${minHeight}~${maxHeight}px를 벗어났습니다.`
             ,
           });
