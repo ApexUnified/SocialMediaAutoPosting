@@ -80,7 +80,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
 
   const handleAIGenerate = async () => {
     if (!selectedPlatforms.length) {
-      toast.error(
+      toast.info(
         lang === "en"
           ? "Please select at least one platform"
           : "적어도 하나의 플랫폼을 선택하세요"
@@ -89,7 +89,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       return;
     }
     if (!formData.prompt) {
-      toast.error(
+      toast.info(
         lang === "en"
           ? "Please enter a prompt for AI generation"
           : "AI 생성을 위한 프롬프트를 입력하세요"
@@ -138,16 +138,43 @@ const PublisherForm = ({ onBack, onSuccess }) => {
   }
 
   // Validation For Media Size
-  async function checkMediaSize(url, maxSizeMB, platformName) {
+  async function checkMediaSize({
+    url,
+    maxSizeMB,
+    platformName,
+    mediaType, // 'image' or 'video'
+    validateDimensions = false,
+    validateDuration = false,
+    minWidth,
+    maxWidth,
+    minHeight,
+    maxHeight,
+    minDuration,
+    maxDuration,
+  }) {
     try {
       const response = await axios.post(`${API_URL}/blogs/validate-media`, {
         url,
         maxSizeMB,
         platformName,
+        mediaType,
+        validateDimensions,
+        validateDuration,
+        minWidth,
+        maxWidth,
+        minHeight,
+        maxHeight,
+        minDuration,
+        maxDuration,
+        lang,
       });
 
       if (!response.data.success) {
         throw new Error(response.data.message);
+      }
+
+      if (response.data.success) {
+        toast.success(response.data.message);
       }
     } catch (error) {
       throw new Error(
@@ -261,7 +288,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       const platformList = missingMedia
         .map((p) => platformNames[p.toLowerCase()] || p)
         .join(", ");
-      toast.error(
+      toast.info(
         lang === "en"
           ? `Please upload at least one URL for: ${platformList}`
           : `${platformList}에 대해 최소한 하나의 URL을 업로드하세요`
@@ -282,7 +309,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       const platformList = missingText
         .map((p) => platformNames[p.toLowerCase()] || p)
         .join(", ");
-      toast.error(
+      toast.info(
         lang === "en"
           ? `Please enter a post title AND text for: ${platformList}`
           : `${platformList}에 대해 게시물 제목과 내용을 모두 입력하세요`
@@ -291,20 +318,9 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       return false;
     }
 
-    // 3. Reddit specific: Require redditLink
-    if (selectedPlatforms.includes("reddit") && !formData.redditLink.trim()) {
-      toast.error(
-        lang === "en"
-          ? "Please enter a valid Reddit link"
-          : "유효한 Reddit 링크를 입력하세요"
-      );
-
-      return false;
-    }
-
     if (selectedPlatforms.includes("gmb")) {
       if (trimmed.length > 1500) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Google Business Post Text Length Cannot Be Greater Than 1500 characters. Your post is ${trimmed.length} characters.`
             : `Google 비즈니스 게시물의 텍스트 길이는 1500자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
@@ -314,7 +330,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Please upload only 1 image for Google Business"
             : "Google 비즈니스에는 이미지 1개만 업로드할 수 있습니다"
@@ -324,7 +340,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Google Business doesn't support video."
             : "Google 비즈니스는 동영상을 지원하지 않습니다."
@@ -334,7 +350,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Google Business doesn't accept both image and video."
             : "Google 비즈니스는 이미지와 동영상을 동시에 업로드할 수 없습니다."
@@ -349,17 +365,27 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 5 MB each)
-          await checkMediaSize(imgUrl, 5, "Google Business");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 5,
+            platformName: "Google Business",
+            mediaType: "image",
+            validateDimensions: true,
+            minWidth: 250,
+            maxWidth: 4000, // safe upper limit
+            minHeight: 250,
+            maxHeight: 4000,
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("bluesky")) {
       if (trimmed.length > 299) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Bluesky Post Text Length Cannot Be Greater Than 299 characters. Your post is ${trimmed.length} characters.`
             : `Bluesky 게시물의 텍스트 길이는 299자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
@@ -369,7 +395,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "BlueSky supports only one video at a time."
             : "BlueSky는 한 번에 하나의 동영상만 지원합니다."
@@ -379,7 +405,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "BlueSky cannot accept both image and video in the same post."
             : "BlueSky는 하나의 게시물에 이미지와 동영상을 동시에 업로드할 수 없습니다."
@@ -389,7 +415,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 4) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "BlueSky supports up to 4 images only."
             : "BlueSky는 최대 4개의 이미지만 지원합니다."
@@ -405,24 +431,42 @@ const PublisherForm = ({ onBack, onSuccess }) => {
         for (const imgUrl of images) {
           isValidExtension(imgUrl, imageExtensions);
           // Check image sizes (max 1 MB each)
-          await checkMediaSize(imgUrl, 1, "BlueSky");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 1,
+            platformName: "bluesky",
+            mediaType: "image",
+            validateDimensions: false,
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 100 MB for BlueSky)
-          await checkMediaSize(videoUrl, 100, "BlueSky");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 1024, // 1 GB = 1024 MB
+            platformName: "bluesky",
+            mediaType: "video",
+            validateDimensions: true,
+            validateDuration: true,
+            validateAspectRatio: true,
+            minDuration: 1,
+            maxDuration: 240, // 4 minutes = 240 seconds
+            minAspectRatio: 1 / 3,
+            maxAspectRatio: 3 / 1,
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("instagram")) {
       if (trimmed.length > 2200) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Instagram Post Text Length Cannot Be Greater Than 2200 characters. Your post is ${trimmed.length} characters.`
             : `Instagram 게시물의 텍스트 길이는 2200자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
@@ -432,7 +476,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Instagram supports only one video at a time."
             : "Instagram은 한 번에 하나의 동영상만 지원합니다."
@@ -442,7 +486,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Instagram cannot accept both image and video in the same post."
             : "Instagram은 하나의 게시물에 이미지와 동영상을 동시에 업로드할 수 없습니다."
@@ -452,7 +496,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 10) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Instagram supports up to 10 images only."
             : "Instagram은 최대 10개의 이미지만 지원합니다."
@@ -469,17 +513,46 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 8 MB each)
-          await checkMediaSize(imgUrl, 8, "instagram");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 8,
+            platformName: "instagram",
+            mediaType: "image",
+            validateDimensions: true,
+            validateAspectRatio: true, // to restrict 4:5 to 1.91:1
+            minWidth: 320,
+            maxWidth: 1440,
+            minHeight: 320,
+            maxHeight: 1440,
+            minAspectRatio: 0.8, // 4:5
+            maxAspectRatio: 1.91, // 1.91:1
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 100 MB for instagram)
-          await checkMediaSize(videoUrl, 100, "instagram");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 100,
+            platformName: "instagram",
+            mediaType: "video",
+            validateDimensions: true,
+            validateDuration: true,
+            validateAspectRatio: true,
+            minWidth: 320,
+            maxWidth: 1920,
+            minHeight: 320,
+            maxHeight: 1080,
+            minDuration: 3,
+            maxDuration: 60,
+            minAspectRatio: 0.8, // 4:5
+            maxAspectRatio: 1.91, // 1.91:1
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
@@ -487,7 +560,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("linkedin")) {
       // console.log(trimmed.length);
       if (trimmed.length > 3000) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `LinkedIn Post Text Length Cannot Be Greater Than 3000 characters. Your post is ${trimmed.length} characters.`
             : `LinkedIn 게시물의 텍스트 길이는 3000자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
@@ -497,7 +570,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "LinkedIn supports only one video at a time."
             : "LinkedIn은 한 번에 하나의 동영상만 지원합니다."
@@ -507,7 +580,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "LinkedIn cannot accept both image and video in the same post."
             : "LinkedIn은 이미지와 비디오를 동시에 포함한 게시물을 허용하지 않습니다."
@@ -517,7 +590,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 9) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "LinkedIn supports up to 9 images only."
             : "LinkedIn은 최대 9장의 이미지까지만 지원합니다."
@@ -534,24 +607,53 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 5 MB each)
-          await checkMediaSize(imgUrl, 5, "Linkedin");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 5,
+            platformName: "Linkedin",
+            mediaType: "image",
+            validateDimensions: true,
+            minWidth: 320, // safe lower bound
+            maxWidth: 7680, // based on 36,152,320 pixel limit
+            minHeight: 320,
+            maxHeight: 7680,
+            validateAspectRatio: true,
+            minAspectRatio: 0.4167, // 1:2.4
+            maxAspectRatio: 2.4, // 2.4:1
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 200 MB for Linkedin)
-          await checkMediaSize(videoUrl, 200, "Linkedin");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 200,
+            platformName: "Linkedin",
+            mediaType: "video",
+            validateDimensions: true,
+            validateDuration: true,
+            minWidth: 320,
+            maxWidth: 3840, // reasonable upper bound for HD
+            minHeight: 320,
+            maxHeight: 2160,
+            minDuration: 3, // 3 seconds
+            maxDuration: 1800, // 30 minutes
+            validateAspectRatio: true,
+            minAspectRatio: 0.4167, // 1:2.4
+            maxAspectRatio: 2.4, // 2.4:1
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("facebook")) {
       if (trimmed.length > 63206) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Facebook Post Text Length Cannot Be Greater Than 63,206 characters. Your post is ${trimmed.length} characters.`
             : `Facebook 게시물 텍스트 길이는 최대 63,206자까지만 허용됩니다. 현재 게시물은 ${trimmed.length}자입니다.`
@@ -561,7 +663,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Facebook supports only one video at a time."
             : "Facebook은 한 번에 하나의 동영상만 지원합니다."
@@ -570,7 +672,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Facebook cannot accept both image and video in the same post."
             : "Facebook은 이미지와 동영상을 동시에 업로드할 수 없습니다."
@@ -580,7 +682,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 10) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Facebook supports up to 10 images only."
             : "Facebook은 최대 10개의 이미지까지만 지원합니다."
@@ -596,24 +698,49 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 10 MB each)
-          await checkMediaSize(imgUrl, 10, "Facebook");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 10,
+            platformName: "Facebook",
+            mediaType: "image",
+            validateDimensions: true,
+            minWidth: 470,
+            maxWidth: 2048,
+            minHeight: 470,
+            maxHeight: 2048,
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 2 GB for Facebook)
-          await checkMediaSize(videoUrl, 2000, "Facebook");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 2000,
+            platformName: "Facebook",
+            mediaType: "video",
+            validateDimensions: true,
+            minWidth: 720,
+            maxWidth: 1920,
+            minHeight: 720,
+            maxHeight: 1080,
+            validateDuration: true,
+            maxDuration: 14400, // 4 hours
+            validateAspectRatio: true,
+            minAspectRatio: 0.5625, // 9:16 (portrait)
+            maxAspectRatio: 1.7778, // 16:9 (landscape)
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("reddit")) {
       if (trimmed.length > 5000) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Reddit Post Text Length Cannot Be Greater Than 5000 characters. Your post is ${trimmed.length} characters.`
             : `Reddit 게시물 텍스트 길이는 5000자를 초과할 수 없습니다. 현재 길이: ${trimmed.length}자입니다.`
@@ -622,8 +749,15 @@ const PublisherForm = ({ onBack, onSuccess }) => {
         return false;
       }
 
+      if (formData.subreddit === "" || formData.subreddit === null) {
+        toast.info(
+          lang === "en" ? "Please add a subreddit" : "서브레딧을 추가해 주세요"
+        );
+        return false;
+      }
+
       if (videos.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Reddit doesn't support video."
             : "Reddit는 동영상을 지원하지 않습니다."
@@ -633,7 +767,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Reddit doesn't accept both image and video."
             : "Reddit는 이미지와 동영상을 동시에 업로드할 수 없습니다."
@@ -643,7 +777,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Reddit supports up to 1 image only per post."
             : "Reddit는 게시물당 이미지 1개만 업로드할 수 있습니다."
@@ -653,22 +787,27 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       try {
-        const imageExtensions = ["jpg", "jpeg", "png"];
+        const imageExtensions = ["jpg", "jpeg", "png", "webp"];
 
         for (const imgUrl of images) {
           isValidExtension(imgUrl, imageExtensions);
           // Check image sizes (max 10 MB each)
-          await checkMediaSize(imgUrl, 10, "Reddit");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 10,
+            platformName: "Reddit",
+            mediaType: "image",
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("pinterest")) {
       if (trimmed.length > 500) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Pinterest Post Text Length Cannot Be Greater Than 500 characters. Your post is ${trimmed.length} characters.`
             : `Pinterest 게시물 텍스트 길이는 500자를 초과할 수 없습니다. 현재 길이: ${trimmed.length}자입니다.`
@@ -678,7 +817,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Pinterest doesn't support video."
             : "Pinterest는 비디오를 지원하지 않습니다."
@@ -688,7 +827,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Pinterest doesn't accept both image and video."
             : "Pinterest는 이미지와 비디오를 동시에 업로드할 수 없습니다."
@@ -698,7 +837,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 5) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Pinterest supports up to 5 images only per post."
             : "Pinterest는 게시물당 최대 5장의 이미지만 지원합니다."
@@ -714,17 +853,30 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 20 MB each)
-          await checkMediaSize(imgUrl, 20, "Pinterest");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 20,
+            platformName: "Pinterest",
+            mediaType: "image",
+            validateDimensions: true,
+            minWidth: 600,
+            minHeight: 900,
+            maxWidth: 2000,
+            maxHeight: 3000,
+            validateAspectRatio: true,
+            minAspectRatio: 0.66, // 2:3 = 0.666...
+            maxAspectRatio: 0.66,
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("telegram")) {
       if (trimmed.length > 1024) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Telegram Post Text Length Cannot Be Greater Than 1024 characters. Your post is ${trimmed.length} characters.`
             : `Telegram 게시물 텍스트 길이는 1024자를 초과할 수 없습니다. 현재 게시물은 ${trimmed.length}자입니다.`
@@ -734,7 +886,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Telegram Doesn't support videos."
             : "Telegram은 동영상을 지원하지 않습니다."
@@ -744,7 +896,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Telegram doesn't support images."
             : "Telegram은 이미지를 지원하지 않습니다."
@@ -756,7 +908,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
 
     if (selectedPlatforms.includes("threads")) {
       if (trimmed.length > 500) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Threads post text cannot exceed 500 characters. Your post is ${trimmed.length} characters.`
             : `Threads 게시물 텍스트는 500자를 초과할 수 없습니다. 현재 ${trimmed.length}자입니다.`
@@ -766,7 +918,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Threads only supports 1 video per post."
             : "Threads는 게시물당 하나의 동영상만 지원합니다."
@@ -776,7 +928,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Threads doesn't accept both image and video in the same post."
             : "Threads는 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
@@ -786,7 +938,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 20) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Threads supports up to 20 images only per post."
             : "Threads는 게시물당 최대 20개의 이미지만 지원합니다."
@@ -802,24 +954,45 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 8 MB each)
-          await checkMediaSize(imgUrl, 8, "Threads");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 8,
+            platformName: "Threads",
+            mediaType: "image",
+            validateDimensions: true,
+            minWidth: 320,
+            maxWidth: 1440,
+            minAspectRatio: 1 / 10, // 0.1
+            maxAspectRatio: 10 / 1, // 10
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 1 GB for Threads)
-          await checkMediaSize(videoUrl, 1000, "Threads");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 1024, // 1 GB
+            platformName: "Threads",
+            mediaType: "video",
+            validateAspectRatio: true,
+            minAspectRatio: 1 / 100, // 0.01
+            maxAspectRatio: 10 / 1,
+            validateDuration: true,
+            minDuration: 1, // > 0 sec
+            maxDuration: 300, // 5 min
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("tiktok")) {
       if (trimmed.length > 2200) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `TikTok post text length cannot be greater than 2200 characters. Your post is ${trimmed.length} characters.`
             : `TikTok 게시물 텍스트 길이는 2200자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
@@ -829,7 +1002,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "TikTok only supports 1 video per post."
             : "TikTok은 게시물당 하나의 동영상만 지원합니다."
@@ -839,7 +1012,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "TikTok doesn't accept both image and video."
             : "TikTok은 이미지와 동영상을 동시에 포함한 게시물을 허용하지 않습니다."
@@ -849,7 +1022,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "TikTok doesn't support images."
             : "TikTok은 이미지를 지원하지 않습니다."
@@ -865,17 +1038,33 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 1 GB for Tiktok)
-          await checkMediaSize(videoUrl, 1000, "Tiktok");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 1024, // 1 GB
+            platformName: "TikTok",
+            mediaType: "video",
+            validateDimensions: true,
+            minWidth: 360,
+            maxWidth: 4096,
+            minHeight: 360,
+            maxHeight: 4096,
+            validateDuration: true,
+            minDuration: 3, // 3 seconds
+            maxDuration: 600, // 10 minutes
+            validateAspectRatio: true,
+            minAspectRatio: 9 / 16, // 0.5625
+            maxAspectRatio: 16 / 9, // 1.777...
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("twitter")) {
       if (trimmed.length > 280) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `Twitter post text cannot be greater than 280 characters. Your post is ${trimmed.length} characters.`
             : `Twitter 게시물 텍스트 길이는 280자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
@@ -885,7 +1074,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 4) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Twitter only supports 4 videos per post."
             : "Twitter는 게시물당 최대 4개의 동영상만 지원합니다."
@@ -895,7 +1084,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Twitter doesn't accept both image and video."
             : "Twitter는 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
@@ -905,7 +1094,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 4) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Twitter supports up to 4 images only per post."
             : "Twitter는 게시물당 최대 4개의 이미지만 지원합니다."
@@ -922,24 +1111,53 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 5 MB each)
-          await checkMediaSize(imgUrl, 5, "Twitter");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 5,
+            platformName: "X/Twitter",
+            mediaType: "image",
+            validateDimensions: true,
+            minWidth: 4,
+            maxWidth: 8192,
+            minHeight: 4,
+            maxHeight: 8192,
+            validateAspectRatio: true,
+            minAspectRatio: 1 / 3, // As low as 1:3 (0.333...)
+            maxAspectRatio: 3 / 1, // Up to 3:1 (3.0)
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 512 MB for Twitter)
-          await checkMediaSize(videoUrl, 512, "Twitter");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 512,
+            platformName: "X/Twitter",
+            mediaType: "video",
+            validateDimensions: true,
+            minWidth: 1, // Not documented exactly, safe fallback
+            maxWidth: 1280,
+            minHeight: 1, // Not documented exactly, safe fallback
+            maxHeight: 1024,
+            validateDuration: true,
+            minDuration: 0.5, // 0.5 seconds
+            maxDuration: 140, // 140 seconds
+            validateAspectRatio: true,
+            minAspectRatio: 1 / 3, // 0.333...
+            maxAspectRatio: 3 / 1, // 3.0
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
 
     if (selectedPlatforms.includes("youtube")) {
       if (trimmed.length > 5000) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? `YouTube post text cannot be greater than 5000 characters. Your post is ${trimmed.length} characters.`
             : `YouTube 게시물 텍스트 길이는 5000자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
@@ -949,7 +1167,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "YouTube only supports 1 video per post."
             : "YouTube는 게시물당 하나의 동영상만 지원합니다."
@@ -959,7 +1177,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 0 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "YouTube doesn't accept both image and video."
             : "YouTube는 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
@@ -969,7 +1187,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "YouTube doesn't support images."
             : "YouTube는 이미지를 지원하지 않습니다."
@@ -985,10 +1203,18 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(videoUrl, videoExtensions);
 
           // Check video size (max 4 GB for Youtube)
-          await checkMediaSize(videoUrl, 4000, "Youtube");
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 4000, // 4 GB
+            platformName: "YouTube",
+            mediaType: "video",
+            validateAspectRatio: true,
+            minAspectRatio: 1 / 3,
+            maxAspectRatio: 3 / 1,
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
@@ -996,7 +1222,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     if (selectedPlatforms.includes("snapchat")) {
       if (!formData.snapchatPostType === "spotlight") {
         if (trimmed.length > 500) {
-          toast.error(
+          toast.info(
             lang === "en"
               ? `Snapchat post text cannot be greater than 500 characters. Your post is ${trimmed.length} characters.`
               : `Snapchat 게시물 텍스트 길이는 500자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
@@ -1007,7 +1233,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Snapchat only supports 1 video per post."
             : "Snapchat은 게시물당 하나의 동영상만 지원합니다."
@@ -1017,7 +1243,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (videos.length === 1 && images.length > 0) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Snapchat doesn't accept both image and video."
             : "Snapchat은 이미지와 동영상을 동시에 포함하는 게시물을 허용하지 않습니다."
@@ -1027,7 +1253,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
       }
 
       if (images.length > 1) {
-        toast.error(
+        toast.info(
           lang === "en"
             ? "Snapchat supports up to 1 image only per post."
             : "Snapchat은 게시물당 최대 1장의 이미지만 지원합니다."
@@ -1038,7 +1264,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
 
       if (formData.snapchatPostType === "spotlight") {
         if (images.length > 0) {
-          toast.error(
+          toast.info(
             lang === "en"
               ? "Snapchat Spotlight doesn't accept images."
               : "Snapchat Spotlight는 이미지를 지원하지 않습니다."
@@ -1048,7 +1274,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
         }
 
         if (trimmed.length > 160) {
-          toast.error(
+          toast.info(
             lang === "en"
               ? `Snapchat Spotlight post text cannot be greater than 160 characters. Your post is ${trimmed.length} characters.`
               : `Snapchat Spotlight 게시물 텍스트 길이는 160자를 초과할 수 없습니다. 현재 길이는 ${trimmed.length}자입니다.`
@@ -1066,17 +1292,36 @@ const PublisherForm = ({ onBack, onSuccess }) => {
           isValidExtension(imgUrl, imageExtensions);
 
           // Check image sizes (max 20 MB each)
-          await checkMediaSize(imgUrl, 20, "SnapChat");
+          await checkMediaSize({
+            url: imgUrl,
+            maxSizeMB: 20,
+            platformName: "Snapchat",
+            mediaType: "image",
+            validateAspectRatio: true,
+            minAspectRatio: 9 / 16,
+            maxAspectRatio: 9 / 16,
+          });
         }
 
         for (const videoUrl of videos) {
           isValidExtension(videoUrl, videoExtensions);
 
-          // Check video size (max 500 MB for SnapChat Story)
-          await checkMediaSize(videoUrl, 500, "SnapChat");
+          // Check video size (max 500 MB for SnapChat )
+          await checkMediaSize({
+            url: videoUrl,
+            maxSizeMB: 500,
+            platformName: "Snapchat",
+            mediaType: "video",
+            validateAspectRatio: true,
+            validateDuration: true,
+            minDuration: 5,
+            maxDuration: 60,
+            minAspectRatio: 9 / 16,
+            maxAspectRatio: 9 / 16,
+          });
         }
       } catch (err) {
-        toast.error(err.message);
+        toast.info(err.message);
         return false;
       }
     }
@@ -1088,7 +1333,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
     setIsSubmitting(true);
 
     if (!selectedPlatforms.length) {
-      toast.error(
+      toast.info(
         lang === "en"
           ? "Please select at least one platform."
           : "적어도 하나의 플랫폼을 선택하세요."
@@ -1115,6 +1360,7 @@ const PublisherForm = ({ onBack, onSuccess }) => {
         autoTranslate: formData.autoTranslate,
         aiGenerated: formData.aiGenerated,
         contentType: formData.contentType,
+        lang: lang,
         metadata: {
           subreddit: formData.subreddit,
           redditLink: formData.redditLink,

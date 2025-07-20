@@ -1,4 +1,11 @@
 import axios from "axios";
+import OpenAI from "openai";
+
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 
 const AYRSHARE_API_KEY = process.env.AYRSHARE_API_KEY;
 const AYRSHARE_API_URL = "https://api.ayrshare.com/api/";
@@ -18,6 +25,7 @@ export const shareToSocialMedia = async ({
   mediaUrls,
   metadata,
   shortenLinks,
+  lang
 }) => {
 
   try {
@@ -75,16 +83,37 @@ export const shareToSocialMedia = async ({
           console.log("status Code: " + errorCode);
 
 
-          // console.error(`Error sharing to ${platform}:`, {
-          //   error: errorMessage,
-          //   code: errorCode,
-          //   details: errorDetails,
-          // });
+          const completion = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: `You are a helpful assistant that generates clear, user-friendly messages based on AYRShare error messages. Your job is to do the following:
+
+                1. Return a simplified and human-readable version of the error.
+                2. Clearly explain whether the error is caused by our system or by the AYRShare API.
+                3. Do not include any URLs or tell the user to visit AYRShare.
+                4. Translate the final message based on the current language:
+                  - Use English if the current language is 'en'.
+                  - Use Korean if the current language is 'ko'.
+
+                Current language: ${lang}`
+                ,
+              },
+              {
+                role: "user",
+                content: errorDetails.errors?.[0]?.message,
+              },
+            ],
+            temperature: 0.7,
+            max_tokens: 1000,
+          });
+
 
           return {
             platform,
             status: "error",
-            message: errorDetails.errors?.[0]?.message || errorMessage,
+            message: completion.choices[0].message.content || errorMessage,
             ayrsharePostId: ayrsharePostId,
           };
         }
@@ -112,8 +141,8 @@ export const pollAyrshareUpdate = async (ayrsharePostId, platform) => {
       const response = await ayrshareClient.get(`/history/${ayrsharePostId}`);
       console.log(
         `Polling status for ${platform} (ID: ${ayrsharePostId}):`,
-       response.data
-     );
+        response.data
+      );
 
       const platformShare = response.data.postIds?.find(
         (share) => share.platform === platform
@@ -130,9 +159,9 @@ export const pollAyrshareUpdate = async (ayrsharePostId, platform) => {
           (updatedContent && updatedContent !== response.data.originalPost)
         ) {
           // Assuming response.data.originalPost exists or compare with initial content if needed
-           console.log(
+          console.log(
             `${platform} update found: URL - ${updatedPostUrl}, Content - ${updatedContent}`
-           );
+          );
           return { postUrl: updatedPostUrl, sharedContent: updatedContent };
         }
       } else if (platformShare && platformShare.status === "failed") {

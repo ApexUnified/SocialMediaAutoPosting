@@ -114,6 +114,7 @@ export const createBlog = async (req, res) => {
       platforms,
       autoTranslate,
       metadata,
+      lang
     } = req.body;
     console.log("mediaUrls: ", mediaUrls);
     // Calculate metadata
@@ -198,6 +199,7 @@ export const createBlog = async (req, res) => {
           mediaUrls: mediaUrls || [],
           metadata,
           shortenLinks: metadata?.shortenLinks || false,
+          lang: lang
         });
 
         // console.log("Social media results:", socialMediaResults);

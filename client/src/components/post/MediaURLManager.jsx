@@ -131,80 +131,77 @@ const MediaURLManager = ({ mediaUrls, onAdd, onRemove }) => {
         </div>
       )}
 
-      <div className="p-3 mt-4 border border-[#4B7289] rounded-md bg-[#E6F4FA]">
-        <p className="text-sm text-[#1A3C5A]">
-          <strong>
-            {lang === "en"
-              ? "What Each Platform Needs"
-              : "각 플랫폼에 필요한 사항"}
-            :
-          </strong>
+      <div className="p-4 mt-4 border border-[#4B7289] rounded-md bg-[#E6F4FA]">
+        <p className="text-lg font-bold text-[#1A3C5A]">
+          {lang === "en"
+            ? "What You Need for Each Platform"
+            : "각 플랫폼에 필요한 것"}
         </p>
-        <ul className="mt-1 space-y-2 text-xs text-[#2D3748]">
+        <ul className="mt-2 space-y-3 text-base text-[#2D3748]">
           <li>
             {lang === "en"
-              ? "• Instagram: Add 1-10 images or 1 video (.jpg, .png, .mp4, or .mov). Images up to 8 MB, video up to 100 MB. Text up to 2200 characters. Don't mix images and video."
-              : "• 인스타그램: 이미지 1~10개 또는 동영상 1개(.jpg, .png, .mp4, .mov)를 추가하세요. 이미지는 최대 8MB, 동영상은 최대 100MB까지 가능합니다. 텍스트는 최대 2200자까지 입력할 수 있으며, 이미지와 동영상을 혼합하지 마세요."}
+              ? "• Instagram: Share 1-10 photos or 1 video. Photos should be small (up to 8 MB) and videos up to 100 MB (3-60 seconds long). Write up to 2200 characters of text. Don’t mix photos and videos in one post."
+              : "• 인스타그램: 사진 1~10장 또는 동영상 1개를 올리세요. 사진은 최대 8MB, 동영상은 최대 100MB(3~60초)로 유지하세요. 텍스트는 최대 2200자까지 가능합니다. 사진과 동영상을 함께 올릴 수 없습니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Snapchat: Use 1 image or 1 video (.jpg, .png, or .mp4). Image up to 20 MB, video up to 500 MB. Text up to 500 characters (160 for Spotlight). Spotlight needs 1 video, no images."
-              : "• 스냅챗: 이미지 1개 또는 동영상 1개(.jpg, .png, .mp4)를 사용하세요. 이미지는 최대 20MB, 동영상은 최대 500MB까지 가능합니다. 텍스트는 최대 500자까지 입력할 수 있으며, 스포트라이트의 경우 160자 제한이 있습니다. 스포트라이트에는 동영상만 사용 가능하며, 이미지는 사용할 수 없습니다."}
+              ? "• Snapchat: Use 1 photo (up to 20 MB) or 1 video (up to 500 MB, 5-60 seconds). Text up to 500 characters. For Spotlight, use 1 video (no photos) and keep text under 160 characters."
+              : "• 스냅챗: 사진 1장(최대 20MB) 또는 동영상 1개(최대 500MB, 5~60초)를 올리세요. 텍스트는 최대 500자까지 가능합니다. 스포트라이트는 동영상 1개만 가능(사진 불가)하며, 텍스트는 160자 미만으로 유지하세요."}
           </li>
           <li>
             {lang === "en"
-              ? "• Pinterest: Add 1-5 images (.jpg or .png, up to 20 MB each). No videos. Text up to 500 characters."
-              : "• 핀터레스트: 이미지 1~5개(.jpg 또는 .png, 각 최대 20MB)를 추가하세요. 동영상은 지원되지 않습니다. 텍스트는 최대 500자까지 입력할 수 있습니다."}
+              ? "• Pinterest: Share 1-5 photos (up to 20 MB each). No videos. Keep text under 500 characters."
+              : "• 핀터레스트: 사진 1~5장(각 최대 20MB)을 올리세요. 동영상은 지원되지 않습니다. 텍스트는 최대 500자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• YouTube: Add 1 video (.mp4 or .mov, up to 4 GB). No images. Text up to 5000 characters."
-              : "• 유튜브: 동영상 1개(.mp4 또는 .mov, 최대 4GB)를 추가하세요. 이미지는 지원되지 않습니다. 텍스트는 최대 5000자까지 입력할 수 있습니다."}
+              ? "• YouTube: Upload 1 video (up to 4 GB). No photos. Write up to 5000 characters of text."
+              : "• 유튜브: 동영상 1개(최대 4GB)를 올리세요. 사진은 지원되지 않습니다. 텍스트는 최대 5000자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• TikTok: Add 1 video (.mp4, .mov, or .webm, up to 1 GB). No images. Text up to 2200 characters."
-              : "• 틱톡: 동영상 1개(.mp4, .mov, .webm, 최대 1GB)를 추가하세요. 이미지는 지원되지 않습니다. 텍스트는 최대 2200자까지 입력할 수 있습니다."}
+              ? "• TikTok: Share 1 video (up to 1 GB, 3 seconds to 10 minutes). No photos. Text up to 2200 characters."
+              : "• 틱톡: 동영상 1개(최대 1GB, 3초~10분)를 올리세요. 사진은 지원되지 않습니다. 텍스트는 최대 2200자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Google Business: Add 1 image (.jpg or .png, up to 5 MB). No videos. Text up to 1500 characters."
-              : "• 구글 비즈니스: 이미지 1개(.jpg 또는 .png, 최대 5MB)를 추가하세요. 동영상은 지원되지 않습니다. 텍스트는 최대 1500자까지 입력할 수 있습니다."}
+              ? "• Google Business: Add 1 photo (up to 5 MB). No videos. Keep text under 1500 characters."
+              : "• 구글 비즈니스: 사진 1장(최대 5MB)을 올리세요. 동영상은 지원되지 않습니다. 텍스트는 최대 1500자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Facebook: Include a title and text. Optional: 1-10 images or 1 video (.jpg, .png, .mp4, .mov, or .avi). Images up to 10 MB, video up to 2 GB. Don't mix images and video, Text up to 63206 characters."
-              : "• 페이스북: 제목과 텍스트를 포함하세요. 선택적으로 이미지 1~10개 또는 동영상 1개(.jpg, .png, .mp4, .mov, .avi)를 추가할 수 있습니다. 이미지는 최대 10MB, 동영상은 최대 2GB까지 허용됩니다. 이미지와 동영상을 혼합하지 마세요. 텍스트는 최대 63206자까지 입력할 수 있습니다."}
+              ? "• Facebook: Include a title and text. You can add 1-10 photos (up to 10 MB each) or 1 video (up to 2 GB, up to 4 hours). Don’t mix photos and videos. Text can be up to 63,206 characters."
+              : "• 페이스북: 제목과 텍스트를 추가하세요. 사진 1~10장(각 최대 10MB) 또는 동영상 1개(최대 2GB, 최대 4시간)를 추가할 수 있습니다. 사진과 동영상을 함께 올릴 수 없습니다. 텍스트는 최대 63,206자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• LinkedIn: Include a title and text. Optional: 1-9 images or 1 video (.jpg, .png, or .mp4). Images up to 5 MB, video up to 200 MB. Text up to 3000 characters. Don't mix images and video."
-              : "• 링크드인: 제목과 텍스트를 포함하세요. 선택적으로 이미지 1~9개 또는 동영상 1개(.jpg, .png, .mp4)를 추가할 수 있습니다. 이미지는 최대 5MB, 동영상은 최대 200MB까지 가능합니다. 이미지와 동영상을 혼합하지 마세요. 텍스트는 최대 3000자까지 입력할 수 있습니다."}
+              ? "• LinkedIn: Add a title and text. Optionally include 1-9 photos (up to 5 MB each) or 1 video (up to 200 MB, 3 seconds to 30 minutes). Don’t mix photos and videos. Text up to 3000 characters."
+              : "• 링크드인: 제목과 텍스트를 추가하세요. 선택적으로 사진 1~9장(각 최대 5MB) 또는 동영상 1개(최대 200MB, 3초~30분)를 올릴 수 있습니다. 사진과 동영상을 함께 올릴 수 없습니다. 텍스트는 최대 3000자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• X (Twitter): Include a title and text. Optional: 1-4 images or 1-4 videos (.jpg, .png, .webp, .mp4, or .mov). Images up to 5 MB, videos up to 512 MB. Text up to 280 characters. Don't mix images and video."
-              : "• X(트위터): 제목과 텍스트를 포함하세요. 선택적으로 이미지 1~4개 또는 동영상 1~4개(.jpg, .png, .webp, .mp4, .mov)를 추가할 수 있습니다. 이미지는 최대 5MB, 동영상은 최대 512MB까지 허용됩니다. 이미지와 동영상을 혼합하지 마세요. 텍스트는 최대 280자까지 입력할 수 있습니다."}
+              ? "• X (Twitter): Include a title and text. You can add 1-4 photos (up to 5 MB each) or 1-4 videos (up to 512 MB, 0.5-140 seconds). Don’t mix photos and videos. Text up to 280 characters."
+              : "• X(트위터): 제목과 텍스트를 추가하세요. 사진 1~4장(각 최대 5MB) 또는 동영상 1~4개(최대 512MB, 0.5~140초)를 올릴 수 있습니다. 사진과 동영상을 함께 올릴 수 없습니다. 텍스트는 최대 280자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Telegram: Include a title and text. No images or videos. Text up to 1024 characters."
-              : "• 텔레그램: 제목과 텍스트를 포함하세요. 이미지나 동영상은 지원되지 않습니다. 텍스트는 최대 1024자까지 입력할 수 있습니다."}
+              ? "• Telegram: Add a title and text. No photos or videos. Text up to 1024 characters."
+              : "• 텔레그램: 제목과 텍스트를 추가하세요. 사진이나 동영상은 지원되지 않습니다. 텍스트는 최대 1024자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Bluesky: Include a title and text. Optional: 1-4 images or 1 video (.jpg, .png, or .mp4). Images up to 1 MB, video up to 100 MB. Text up to 299 characters. Don't mix images and video."
-              : "• 블루스카이: 제목과 텍스트를 포함하세요. 선택적으로 이미지 1~4개 또는 동영상 1개(.jpg, .png, .mp4)를 추가할 수 있습니다. 이미지는 최대 1MB, 동영상은 최대 100MB까지 허용됩니다. 텍스트는 최대 299자까지 입력할 수 있으며, 이미지와 동영상을 혼합하지 마세요."}
+              ? "• Bluesky: Include a title and text. You can add 1-4 photos (up to 1 MB each) or 1 video (up to 1 GB, 1-240 seconds). Don’t mix photos and videos. Text up to 299 characters."
+              : "• 블루스카이: 제목과 텍스트를 추가하세요. 사진 1~4장(각 최대 1MB) 또는 동영상 1개(최대 1GB, 1~240초)를 올릴 수 있습니다. 사진과 동영상을 함께 올릴 수 없습니다. 텍스트는 최대 299자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Reddit: Include a title, text, and a Reddit link. Optional: 1 image (.jpg or .png, up to 10 MB). No videos. Text up to 5000 characters."
-              : "• 레딧: 제목, 텍스트, 그리고 Reddit 링크를 포함하세요. 선택적으로 이미지 1개(.jpg 또는 .png, 최대 10MB)를 추가할 수 있습니다. 동영상은 지원되지 않습니다. 텍스트는 최대 5000자까지 입력할 수 있습니다."}
+              ? "• Reddit: Add a title, text, and choose a subreddit. You can include 1 photo (up to 10 MB). No videos. Text up to 5000 characters."
+              : "• 레딧: 제목, 텍스트, 서브레딧을 추가하세요. 사진 1장(최대 10MB)을 올릴 수 있습니다. 동영상은 지원되지 않습니다. 텍스트는 최대 5000자까지 가능합니다."}
           </li>
           <li>
             {lang === "en"
-              ? "• Threads: Optional: 1-20 images or 1 video (.jpg, .png, .mp4, or .mov). Images up to 8 MB, video up to 1 GB. Text up to 500 characters. Don't mix images and video."
-              : "• 스레드: 선택적으로 이미지 1~20개 또는 동영상 1개(.jpg, .png, .mp4, .mov)를 추가할 수 있습니다. 이미지는 최대 8MB, 동영상은 최대 1GB까지 가능합니다. 텍스트는 최대 500자까지 입력할 수 있으며, 이미지와 동영상을 혼합하지 마세요."}
+              ? "• Threads: You can share 1-20 photos (up to 8 MB each) or 1 video (up to 1 GB, 1-300 seconds). Don’t mix photos and videos. Text up to 500 characters."
+              : "• 스레드: 사진 1~20장(각 최대 8MB) 또는 동영상 1개(최대 1GB, 1~300초)를 올릴 수 있습니다. 사진과 동영상을 함께 올릴 수 없습니다. 텍스트는 최대 500자까지 가능합니다."}
           </li>
         </ul>
       </div>

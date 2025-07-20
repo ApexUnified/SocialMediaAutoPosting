@@ -10,14 +10,7 @@ export const generateAIContent = async (prompt, platforms) => {
   }
 
   const socialMediaPlatforms = platforms.join(", ");
-  try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content: `You are a professional social media content creator. Create engaging, high-quality content optimized for the following platforms: ${socialMediaPlatforms}.
+  const socialMediaContent = `You are a professional social media content creator. Create engaging, high-quality content optimized for the following platforms: ${socialMediaPlatforms}.
       
           Generate the content in the same language as the user's prompt.
 
@@ -37,7 +30,18 @@ export const generateAIContent = async (prompt, platforms) => {
         - Each URL must be publicly accessible and embed-friendly (e.g., usable in AyrShare or when pasted in a browser).
         - Absolutely no documents (PDFs, DOCs, etc.), shortened links, or temporary URLs.
 
-        If no valid media URL is available, return an empty array for "mediaUrls".`,
+        If no valid media URL is available, return an empty array for "mediaUrls".`;
+
+
+     
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: socialMediaContent,
         },
         {
           role: "user",

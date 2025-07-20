@@ -264,12 +264,14 @@ const EnhancedPostCard = ({ post }) => {
               e.target.style.display = "none";
               e.target.nextSibling.style.display = "flex";
             }}
+            loading="lazy"
           />
           <div className="items-center justify-center hidden w-full h-full bg-gradient-to-br from-blue-800 to-pink-200">
             <img
               src={videoThumbnail}
               alt="Post media"
               className="object-cover w-full h-full"
+              loading="lazy"
             />
           </div>
           {/* Media count badge */}
@@ -286,6 +288,7 @@ const EnhancedPostCard = ({ post }) => {
               src={imageThumbnail}
               alt="Post media"
               className="object-cover w-full h-full"
+              loading="lazy"
             />
           </div>
         </div>
