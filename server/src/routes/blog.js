@@ -10,6 +10,7 @@ import {
   getBlogTranslations,
   getBlogShares,
   generateContent,
+  deleteBlog,
 } from "../controllers/blogController.js";
 
 import { validateMediaSize } from "../controllers/checkMediaSizeController.js";
@@ -88,5 +89,7 @@ router.get(
 
 // New endpoint to check media size
 router.post("/validate-media", validateMediaSize);
+
+router.delete("/:id/:lang",deleteBlog);
 
 export default router;

@@ -489,3 +489,33 @@ export const getBlogShares = async (req, res) => {
     res.status(500).json({ message: "Error fetching social media shares" });
   }
 };
+
+
+export const deleteBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findByIdAndDelete(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({
+        status: false,
+        message: req.params.lang === "en"
+          ? "Blog post not found"
+          : "블로그 게시물을 찾을 수 없습니다"
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: req.params.lang === "en"
+        ? "Blog post deleted successfully"
+        : "블로그 게시물이 성공적으로 삭제되었습니다"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: req.params.lang === "en"
+        ? "Error deleting blog post"
+        : "블로그 게시물을 삭제하는 중 오류가 발생했습니다"
+    });
+  }
+};

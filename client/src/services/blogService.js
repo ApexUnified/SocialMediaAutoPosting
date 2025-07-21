@@ -102,9 +102,9 @@ class BlogService {
     }
   }
 
-  async delete(id) {
+  async delete(id,lang) {
     try {
-      const response = await this.api.delete(`/blogs/${id}`);
+       const response = await this.api.delete(`/blogs/${id}/${lang}`);
       return response.data;
     } catch (error) {
       console.error("Error deleting blog:", error);

@@ -17,6 +17,7 @@ import {
   Users,
   Globe,
   XIcon,
+  X,
 } from "lucide-react";
 import { blogService } from "../../services/blogService";
 import { Link } from "react-router-dom";
@@ -25,6 +26,7 @@ import { platforms } from "../../../utils/constants";
 import imageThumbnail from "../../assets/image-thumbnail-blog.jpg";
 import videoThumbnail from "../../assets/video-thumbnail-blog.jpg";
 import useLanguage from "../../hook/useLanguage";
+import Swal from "sweetalert2";
 
 // Enhanced Post Card Component
 const EnhancedPostCard = ({ post }) => {
@@ -77,6 +79,52 @@ const EnhancedPostCard = ({ post }) => {
       : lang === "en"
       ? "Manual"
       : "수동 생성";
+  };
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title:
+        lang === "en"
+          ? "Do You Really Want to Delete This Post?"
+          : "정말 이 게시물을 삭제하시겠습니까?",
+      showCancelButton: true,
+      cancelButtonColor: "#d33",
+      cancelButtonText: lang === "en" ? "Cancel" : "죽기",
+      confirmButtonText: lang === "en" ? "Delete it" : "삭제",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await blogService.delete(id, lang);
+
+          if (response.status) {
+            Swal.fire({
+              icon: "success",
+              title: lang === "en" ? "Deleted!" : "삭제됨!",
+              text: response.message,
+              confirmButtonText: lang === "en" ? "OK" : "확인",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.reload();
+              }
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: lang === "en" ? "Oops..." : "이런...",
+              text: response.message,
+              confirmButtonText: lang === "en" ? "OK" : "확인",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          Swal.fire({
+            icon: "error",
+            title: lang === "en" ? "Oops..." : "이런...",
+            text: error || "Something went wrong!",
+          });
+        }
+      }
+    });
   };
 
   const getPlatformIcon = (share) => {
@@ -295,7 +343,15 @@ const EnhancedPostCard = ({ post }) => {
       )}
 
       {/* Content Section */}
-      <div className="p-6">
+      <div className="p-6 ">
+        <button
+          onClick={() => handleDelete(post._id)}
+          className="absolute text-gray-400 transition-colors bg-slate-950 top-3 right-3"
+          title="Delete Post"
+        >
+          <X size={20} />
+        </button>
+
         {/* Header with badges and date */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -557,6 +613,24 @@ const PostsDashboard = ({ onCreatePost }) => {
     );
   }
 
+  const getVisiblePages = (currentPage, totalPages, maxPagesToShow = 5) => {
+    const half = Math.floor(maxPagesToShow / 2);
+    let start = Math.max(currentPage - half, 1);
+    let end = start + maxPagesToShow - 1;
+
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(end - maxPagesToShow + 1, 1);
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -689,21 +763,19 @@ const PostsDashboard = ({ onCreatePost }) => {
           </button>
 
           <div className="hidden md:flex">
-            {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(
-              (page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-4 py-3 mt-10 rounded-lg font-medium transition-colors ${
-                    currentPage === page
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  {page}
-                </button>
-              )
-            )}
+            {getVisiblePages(currentPage, pagination.pages, 10).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-4 py-3 mt-10 rounded-lg font-medium transition-colors ${
+                  currentPage === page
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                    : "hover:bg-gray-50"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
           </div>
 
           <button
