@@ -89,7 +89,7 @@ const EnhancedPostCard = ({ post }) => {
           : "정말 이 게시물을 삭제하시겠습니까?",
       showCancelButton: true,
       cancelButtonColor: "#d33",
-      cancelButtonText: lang === "en" ? "Cancel" : "죽기",
+      cancelButtonText: lang === "en" ? "Cancel" : "취소",
       confirmButtonText: lang === "en" ? "Delete it" : "삭제",
     }).then(async (result) => {
       if (result.isConfirmed) {
